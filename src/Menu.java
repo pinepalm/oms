@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-02 23:23:08
+ * @LastEditTime: 2021-04-05 23:30:10
  * @Description: 菜单类
  */
 import java.util.Arrays;
@@ -42,13 +42,35 @@ public final class Menu implements ICommandContainer {
 
     // <editor-fold> 打印菜单pm
     private final Lazy<StandardCommand> printMenuCommand = new Lazy<>(() -> new StandardCommand("pm", (runtimeArgs) -> {
-        if (runtimeArgs.length != 1) {
-            return RunResult.paramsCountIllegal;
+        switch (runtimeArgs.length) {
+            case 1:
+                print();
+
+                return RunResult.empty;
+            case 3:
+                int pageIndex = -1;
+                int pageSize = -1;
+
+                try {
+                    pageIndex = Integer.parseInt(runtimeArgs[1]);
+                    pageSize = Integer.parseInt(runtimeArgs[2]);
+                } catch (NumberFormatException ex) {
+                    return RunResult.inputIllegal;
+                }
+                if (pageSize < 1) {
+                    return RunResult.inputIllegal;
+                }
+
+                MenuViewer viewer = new MenuViewer(this, pageIndex, pageSize);
+                if (viewer.build(true)) {
+                    viewer.printCurrent();
+                    viewer.getBindingView(true).asCurrentView();
+                }
+
+                return RunResult.empty;
+            default:
+                return RunResult.paramsCountIllegal;
         }
-        
-        print();
-        
-        return RunResult.empty;
     }));
     // </editor-fold>
     // <editor-fold> 添加菜品nd
@@ -88,16 +110,16 @@ public final class Menu implements ICommandContainer {
 
         addDish(did, name, price, total);
 
-        return RunResult.empty;
+        return new RunResult(ADD_DISH_SUCCESS);
     }));
     // </editor-fold>
     // <editor-fold> 获取菜品gd
     private final Lazy<StandardCommand> getDishCommand = new Lazy<>(() -> new StandardCommand("gd", (runtimeArgs) -> {
         if (runtimeArgs.length < 2 || !Arrays.asList("-id", "-key").contains(runtimeArgs[1])) {
-            return RunResult.commandNotExists;
+            return RunResult.commandNotExist;
         }
 
-        if (runtimeArgs.length != 3) {
+        if (runtimeArgs.length != 3 && runtimeArgs.length != 5) {
             return RunResult.paramsCountIllegal;
         }
 
@@ -115,15 +137,43 @@ public final class Menu implements ICommandContainer {
                 System.out.println(dishById);
                 break;
             case "-key":
-                Vector<Dish> list = getDishByKeyWord(runtimeArgs[2]);
-                if (list.size() == 0) {
-                    return new RunResult(DISH_DOES_NOT_EXIST);
+                switch (runtimeArgs.length) {
+                    case 3:
+                        Vector<Dish> list = getDishByKeyWord(runtimeArgs[2]);
+                        if (list.isEmpty()) {
+                            return new RunResult(DISH_DOES_NOT_EXIST);
+                        }
+
+                        int i = 1;
+                        for (Dish dish : list) {
+                            System.out.println(String.format("%d. %s", i++, dish));
+                        }
+                        break;
+                    case 5:
+                        int pageIndex = -1;
+                        int pageSize = -1;
+
+                        try {
+                            pageIndex = Integer.parseInt(runtimeArgs[3]);
+                            pageSize = Integer.parseInt(runtimeArgs[4]);
+                        } catch (NumberFormatException ex) {
+                            return RunResult.inputIllegal;
+                        }
+                        if (pageSize < 1) {
+                            return RunResult.inputIllegal;
+                        }
+
+                        MenuViewer viewer = new MenuViewer(this, runtimeArgs[2], pageIndex, pageSize);
+                        if (viewer.build(true)) {
+                            viewer.printCurrent();
+                            viewer.getBindingView(true).asCurrentView();
+                        }
+
+                        break;
+                    default:
+                        break;
                 }
 
-                int i = 1;
-                for (Dish dish : list) {
-                    System.out.println(String.format("%d. %s", i++, dish));
-                }
                 break;
             default:
                 break;
@@ -136,7 +186,7 @@ public final class Menu implements ICommandContainer {
     private final Lazy<StandardCommand> updateDishCommand = new Lazy<>(
             () -> new StandardCommand("udd", (runtimeArgs) -> {
                 if (runtimeArgs.length < 2 || !Arrays.asList("-n", "-t", "-p").contains(runtimeArgs[1])) {
-                    return RunResult.commandNotExists;
+                    return RunResult.commandNotExist;
                 }
 
                 if (runtimeArgs.length != 4) {
@@ -313,7 +363,6 @@ public final class Menu implements ICommandContainer {
         if (list != null) {
             list.add(new Dish(did, name, price, total));
         }
-        System.out.println(ADD_DISH_SUCCESS);
     }
 
     /**
@@ -327,7 +376,7 @@ public final class Menu implements ICommandContainer {
 
         for (Entry<String, Vector<Dish>> entry : dishes.entrySet()) {
             Vector<Dish> list = entry.getValue();
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 hasItems = true;
                 list.sort((d1, d2) -> d1.getDID().compareTo(d2.getDID()));
                 for (Dish dish : list) {
