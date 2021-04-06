@@ -2,17 +2,17 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-02 20:41:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-02 20:42:28
+ * @LastEditTime: 2021-04-06 11:54:39
  * @Description: 事件类
  */
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @description: 事件类
  */
 public class Event<T extends EventArgs> {
-    private Set<EventHandler<T>> handlers = new HashSet<>();
+    private List<EventHandler<T>> handlers = new ArrayList<>();
 
     public void addEventHandler(EventHandler<T> handler) {
         handlers.add(handler);
@@ -23,8 +23,8 @@ public class Event<T extends EventArgs> {
     }
 
     public void invoke(Object sender, T args) {
-        for (EventHandler<T> handler : handlers) {
-            handler.handle(sender, args);
+        for (int i = handlers.size() - 1; i >= 0; i--) {
+            handlers.get(i).handle(sender, args);
         }
     }
 }

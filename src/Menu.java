@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-05 23:30:10
+ * @LastEditTime: 2021-04-06 11:33:41
  * @Description: 菜单类
  */
 import java.util.Arrays;
@@ -108,7 +108,11 @@ public final class Menu implements ICommandContainer {
             return new RunResult(NAME_REPEATED);
         }
 
-        addDish(did, name, price, total);
+        String key = did.substring(0, 1);
+        Vector<Dish> list = getDishes().get(key);
+        if (list != null) {
+            list.add(new Dish(did, name, price, total));
+        }
 
         return new RunResult(ADD_DISH_SUCCESS);
     }));
@@ -259,6 +263,8 @@ public final class Menu implements ICommandContainer {
             newDishCommand.getValue(), getDishCommand.getValue(), updateDishCommand.getValue()));
     // </editor-fold>
 
+    public static final Menu instance = new Menu();
+
     private final Map<String, Vector<Dish>> dishes;
     private final Map<String, Vector<Dish>> readonlyDishes;
 
@@ -267,7 +273,7 @@ public final class Menu implements ICommandContainer {
      * @param {*}
      * @return {*}
      */
-    public Menu() {
+    private Menu() {
         dishes = new LinkedHashMap<>();
         dishes.put("H", new Vector<Dish>());// 热菜
         dishes.put("C", new Vector<Dish>());// 凉菜
@@ -347,22 +353,6 @@ public final class Menu implements ICommandContainer {
         }
 
         return res;
-    }
-
-    /**
-     * @description: 添加菜品
-     * @param {String} did
-     * @param {String} name
-     * @param {double} price
-     * @param {int}    total
-     * @return {*}
-     */
-    public void addDish(String did, String name, double price, int total) {
-        String key = did.substring(0, 1);
-        Vector<Dish> list = dishes.get(key);
-        if (list != null) {
-            list.add(new Dish(did, name, price, total));
-        }
     }
 
     /**

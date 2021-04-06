@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-26 19:31:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-02 23:32:55
+ * @LastEditTime: 2021-04-06 11:35:16
  * @Description: Oms管理器
  */
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public final class OmsManager implements ICommandContainer {
     // <editor-fold> 退出QUIT
     private final Lazy<ExactMatchCommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("QUIT", () -> {
         System.out.println(GOOD_BYE);
-        System.exit(0);
+        OmsCoreView.mainView.close();
 
         return RunResult.empty;
     }));
@@ -27,7 +27,9 @@ public final class OmsManager implements ICommandContainer {
     private final Lazy<Iterable<ICommand>> commands = new Lazy<>(() -> Arrays.asList(quitCommand.getValue()));
     // </editor-fold>
 
-    public OmsManager() {
+    public static final OmsManager instance = new OmsManager();
+
+    private OmsManager() {
 
     }
 

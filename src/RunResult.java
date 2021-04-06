@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-25 00:04:09
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-06 00:30:57
+ * @LastEditTime: 2021-04-06 11:22:30
  * @Description: 运行结果
  */
 
@@ -22,7 +22,6 @@ public class RunResult {
     public static final RunResult paramsCountIllegal = new RunResult(PARAMS_COUNT_ILLEGAL);
     public static final RunResult callInnerMethodIllegal = new RunResult(CALL_INNER_METHOD_ILLEGAL);
     public static final RunResult commandNotExist = new RunResult(COMMAND_NOT_EXIST);
-
 
     public final String message;
 

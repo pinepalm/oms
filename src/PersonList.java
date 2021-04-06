@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-25 19:32:12
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-02 21:16:15
+ * @LastEditTime: 2021-04-06 11:34:30
  * @Description: 人员列表类
  */
 import java.util.Arrays;
@@ -42,7 +42,9 @@ public final class PersonList implements ICommandContainer {
     private final Lazy<Iterable<ICommand>> commands = new Lazy<>(() -> Arrays.asList(newPersonCommand.getValue()));
     // </editor-fold>
 
-    public PersonList() {
+    public static final PersonList instance = new PersonList();
+
+    private PersonList() {
 
     }
 

@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-28 11:31:50
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-06 00:54:58
+ * @LastEditTime: 2021-04-06 10:55:30
  * @Description: 菜单查看器
  */
 import java.util.Arrays;
@@ -165,7 +165,7 @@ public final class MenuViewer implements ICommandContainer {
         OmsCoreView bindingView = getBindingView(false);
         if (bindingView != null) {
             bindingView.close();
-            OmsCoreView.getView((view) -> OmsCoreView.MAIN_TAG.equals(view.getTag())).asCurrentView();
+            OmsCoreView.mainView.asCurrentView();
         }
     }
 }
