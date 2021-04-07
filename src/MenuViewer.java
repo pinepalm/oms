@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-28 11:31:50
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-06 10:55:30
+ * @LastEditTime: 2021-04-07 22:19:57
  * @Description: 菜单查看器
  */
 import java.util.Arrays;
@@ -20,9 +20,11 @@ public final class MenuViewer implements ICommandContainer {
     private static final String THIS_IS_THE_LAST_PAGE = String.format(THIS_IS_THE_PAGE, "last");
 
     private static final String PAGE = "Page: %d";
+    private static final String DISH_DOES_NOT_EXIST = "Dish does not exist";
     private static final String EXIT_PAGE_CHECK_MODE = "Exit page check mode";
     private static final String MENU_IS_EMPTY_EXIT_PAGE_CHECK_MODE = "Menu is empty, exit page check mode";
     private static final String NEXT_LAST_FIRST_QUIT = "n-next page,l-last page,f-first page,q-quit";
+    private static final String PAGE_SLICE_METHODS_PARAMS_INPUT_ILLEGAL = "Page slice method's params input illegal";
     // </editor-fold>
 
     // <editor-fold> 下一页n
@@ -60,23 +62,24 @@ public final class MenuViewer implements ICommandContainer {
 
     private final Menu menu;
     private final String keyword;
-    private final int pageIndex;
-    private final int pageSize;
+    // 为什么这里要用Integer呢?这就要怪坑爹的输出逻辑!
+    private final Integer pageIndex;
+    private final Integer pageSize;
 
     private OmsCoreView bindingView;
     private Vector<Dish> dishList;
     private int pagesCount;
     private int current;
 
-    public MenuViewer(Menu menu, int pageIndex, int pageSize) {
+    public MenuViewer(Menu menu, Integer pageIndex, Integer pageSize) {
         this(menu, null, pageIndex, pageSize);
     }
 
-    public MenuViewer(Menu menu, String keyword, int pageIndex, int pageSize) {
+    public MenuViewer(Menu menu, String keyword, Integer pageIndex, Integer pageSize) {
         this.menu = menu;
         this.keyword = keyword;
-        this.pageIndex = Math.max(pageIndex, 1);
-        this.pageSize = Math.max(pageSize, 1);
+        this.pageIndex = pageIndex;
+        this.pageSize = pageSize;
     }
 
     public Iterable<ICommand> getCommands() {
@@ -101,24 +104,30 @@ public final class MenuViewer implements ICommandContainer {
 
     /**
      * @description: 构建
-     * @param {boolean} quitIfEmpty
+     * @param {*}
      * @return {*}
      */
-    public boolean build(boolean quitIfEmpty) {
-        dishList = menu.getDishByKeyWord(keyword != null ? keyword : "");
-        pagesCount = (int) Math.ceil((double) dishList.size() / pageSize);
-        current = Math.min(pageIndex, pagesCount);
-
-        if (dishList.isEmpty()) {
-            if (quitIfEmpty) {
-                close();
-                System.out.println(MENU_IS_EMPTY_EXIT_PAGE_CHECK_MODE);
-            }
-
-            return false;
+    public MenuViewer build() throws IllegalStateException {
+        if (menu == null || menu.isEmpty()) {
+            close();
+            throw new IllegalStateException(MENU_IS_EMPTY_EXIT_PAGE_CHECK_MODE);
         }
 
-        return true;
+        dishList = menu.getDishByKeyWord(keyword != null ? keyword : "");
+        if (dishList.isEmpty()) {
+            close();
+            throw new IllegalStateException(DISH_DOES_NOT_EXIST);
+        }
+
+        if (pageIndex == null || pageSize == null || pageSize < 1) {
+            close();
+            throw new IllegalStateException(PAGE_SLICE_METHODS_PARAMS_INPUT_ILLEGAL);
+        }
+
+        pagesCount = (int) Math.ceil((double) dishList.size() / pageSize);
+        current = Math.min(Math.max(pageIndex, 1), pagesCount);
+
+        return this;
     }
 
     public void printCurrent() {
