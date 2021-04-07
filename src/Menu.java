@@ -48,23 +48,22 @@ public final class Menu implements ICommandContainer {
 
                 return RunResult.empty;
             case 3:
-                int pageIndex = -1;
-                int pageSize = -1;
+                Integer pageIndex = null;
+                Integer pageSize = null;
 
                 try {
                     pageIndex = Integer.parseInt(runtimeArgs[1]);
                     pageSize = Integer.parseInt(runtimeArgs[2]);
                 } catch (NumberFormatException ex) {
-                    return RunResult.inputIllegal;
-                }
-                if (pageSize < 1) {
-                    return RunResult.inputIllegal;
+                    // 忽略...
                 }
 
                 MenuViewer viewer = new MenuViewer(this, pageIndex, pageSize);
-                if (viewer.build(true)) {
-                    viewer.printCurrent();
+                try {
+                    viewer.build().printCurrent();
                     viewer.getBindingView(true).asCurrentView();
+                } catch (IllegalStateException ex) {
+                    return new RunResult(ex.getMessage());
                 }
 
                 return RunResult.empty;
@@ -154,23 +153,22 @@ public final class Menu implements ICommandContainer {
                         }
                         break;
                     case 5:
-                        int pageIndex = -1;
-                        int pageSize = -1;
+                        Integer pageIndex = null;
+                        Integer pageSize = null;
 
                         try {
                             pageIndex = Integer.parseInt(runtimeArgs[3]);
                             pageSize = Integer.parseInt(runtimeArgs[4]);
                         } catch (NumberFormatException ex) {
-                            return RunResult.inputIllegal;
-                        }
-                        if (pageSize < 1) {
-                            return RunResult.inputIllegal;
+                            // 忽略...
                         }
 
                         MenuViewer viewer = new MenuViewer(this, runtimeArgs[2], pageIndex, pageSize);
-                        if (viewer.build(true)) {
-                            viewer.printCurrent();
+                        try {
+                            viewer.build().printCurrent();
                             viewer.getBindingView(true).asCurrentView();
+                        } catch (IllegalStateException ex) {
+                            return new RunResult(ex.getMessage());
                         }
 
                         break;
@@ -353,6 +351,22 @@ public final class Menu implements ICommandContainer {
         }
 
         return res;
+    }
+
+    /**
+     * @description: 菜单是否为空
+     * @param {*}
+     * @return {*}
+     */
+    public boolean isEmpty() {
+        for (Entry<String, Vector<Dish>> entry : dishes.entrySet()) {
+            Vector<Dish> list = entry.getValue();
+            if (!list.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
