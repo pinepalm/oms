@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-25 19:32:12
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-06 11:34:30
+ * @LastEditTime: 2021-04-08 23:06:26
  * @Description: 人员列表类
  */
 import java.util.Arrays;
@@ -30,9 +30,10 @@ public final class PersonList implements ICommandContainer {
                     return new RunResult(SEX_ILLEGAL);
                 }
 
-                Person person = addPerson(runtimeArgs[1], runtimeArgs[2].charAt(0), runtimeArgs[3]);
-                if (person != null) {
-                    System.out.println(person);
+                try {
+                    System.out.println(addPerson(runtimeArgs[1], runtimeArgs[2].charAt(0), runtimeArgs[3]));
+                } catch (IllegalArgumentException ex) {
+                    return new RunResult(ex.getMessage());
                 }
                 
                 return RunResult.empty;
@@ -59,16 +60,14 @@ public final class PersonList implements ICommandContainer {
      * @param {String} phoneNum
      * @return {*}
      */
-    public Person addPerson(String name, char sex, String phoneNum) {
+    public Person addPerson(String name, char sex, String phoneNum) throws IllegalArgumentException {
         if (!Person.checkSex(sex)) {
-            System.out.println(SEX_ILLEGAL);
-            return null;
+            throw new IllegalArgumentException(SEX_ILLEGAL);
         }
 
         char last = phoneNum.length() > 0 ? phoneNum.charAt(phoneNum.length() - 1) : '\0';
         if (!(Person.checkNum(phoneNum) && ((sex == 'M' && last == '0') || (sex == 'F' && last == '1')))) {
-            System.out.println(PHONE_NUMBER_ILLEGAL);
-            return null;
+            throw new IllegalArgumentException(PHONE_NUMBER_ILLEGAL);
         }
 
         return new Person(name, sex, phoneNum);

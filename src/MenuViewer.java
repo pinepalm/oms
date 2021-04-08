@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-28 11:31:50
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-07 22:19:57
+ * @LastEditTime: 2021-04-08 23:30:42
  * @Description: 菜单查看器
  */
 import java.util.Arrays;
@@ -107,21 +107,21 @@ public final class MenuViewer implements ICommandContainer {
      * @param {*}
      * @return {*}
      */
-    public MenuViewer build() throws IllegalStateException {
+    public MenuViewer build() throws IllegalArgumentException {
         if (menu == null || menu.isEmpty()) {
             close();
-            throw new IllegalStateException(MENU_IS_EMPTY_EXIT_PAGE_CHECK_MODE);
+            throw new IllegalArgumentException(MENU_IS_EMPTY_EXIT_PAGE_CHECK_MODE);
         }
 
         dishList = menu.getDishByKeyWord(keyword != null ? keyword : "");
         if (dishList.isEmpty()) {
             close();
-            throw new IllegalStateException(DISH_DOES_NOT_EXIST);
+            throw new IllegalArgumentException(DISH_DOES_NOT_EXIST);
         }
 
         if (pageIndex == null || pageSize == null || pageSize < 1) {
             close();
-            throw new IllegalStateException(PAGE_SLICE_METHODS_PARAMS_INPUT_ILLEGAL);
+            throw new IllegalArgumentException(PAGE_SLICE_METHODS_PARAMS_INPUT_ILLEGAL);
         }
 
         pagesCount = (int) Math.ceil((double) dishList.size() / pageSize);

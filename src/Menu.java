@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-06 11:33:41
+ * @LastEditTime: 2021-04-08 23:22:58
  * @Description: 菜单类
  */
 import java.util.Arrays;
@@ -62,7 +62,7 @@ public final class Menu implements ICommandContainer {
                 try {
                     viewer.build().printCurrent();
                     viewer.getBindingView(true).asCurrentView();
-                } catch (IllegalStateException ex) {
+                } catch (IllegalArgumentException ex) {
                     return new RunResult(ex.getMessage());
                 }
 
@@ -83,34 +83,17 @@ public final class Menu implements ICommandContainer {
         double price = -1d;
         int total = -1;
 
-        if (!Dish.checkDID(did)) {
-            return new RunResult(DID_INPUT_ILLEGAL);
-        }
-
-        Dish dishById = getDishById(did);
-        if (dishById != null) {
-            return new RunResult(DISH_EXISTS);
-        }
-
         try {
             price = Double.parseDouble(runtimeArgs[3]);
             total = Integer.parseInt(runtimeArgs[4]);
         } catch (NumberFormatException ex) {
             // 忽略...
         }
-        if (!Dish.checkName(name) || !Dish.checkPrice(price) || !Dish.checkTotal(total)) {
-            return new RunResult(NEW_DISHS_ATTRIBUTES_INPUT_ILLEGAL);
-        }
 
-        Dish dishByName = getDishByName(name);
-        if (dishByName != null) {
-            return new RunResult(NAME_REPEATED);
-        }
-
-        String key = did.substring(0, 1);
-        Vector<Dish> list = getDishes().get(key);
-        if (list != null) {
-            list.add(new Dish(did, name, price, total));
+        try {
+            addDish(did, name, price, total);
+        } catch (IllegalArgumentException ex) {
+            return new RunResult(ex.getMessage());
         }
 
         return new RunResult(ADD_DISH_SUCCESS);
@@ -128,11 +111,13 @@ public final class Menu implements ICommandContainer {
 
         switch (runtimeArgs[1]) {
             case "-id":
-                if (!Dish.checkDID(runtimeArgs[2])) {
-                    return new RunResult(DID_INPUT_ILLEGAL);
-                }
+                Dish dishById = null;
 
-                Dish dishById = getDishById(runtimeArgs[2]);
+                try {
+                    dishById = getDishById(runtimeArgs[2]);
+                } catch (IllegalArgumentException ex) {
+                    return new RunResult(ex.getMessage());
+                }
                 if (dishById == null) {
                     return new RunResult(DISH_DOES_NOT_EXIST);
                 }
@@ -167,7 +152,7 @@ public final class Menu implements ICommandContainer {
                         try {
                             viewer.build().printCurrent();
                             viewer.getBindingView(true).asCurrentView();
-                        } catch (IllegalStateException ex) {
+                        } catch (IllegalArgumentException ex) {
                             return new RunResult(ex.getMessage());
                         }
 
@@ -197,29 +182,16 @@ public final class Menu implements ICommandContainer {
 
                 String did = runtimeArgs[2];
 
-                if (!Dish.checkDID(did)) {
-                    return new RunResult(DID_INPUT_ILLEGAL);
-                }
-
-                Dish dish = getDishById(did);
-                if (dish == null) {
-                    return new RunResult(DISH_DOES_NOT_EXIST);
-                }
-
                 switch (runtimeArgs[1]) {
                     case "-n":
                         String name = runtimeArgs[3];
 
-                        if (!Dish.checkName(name)) {
-                            return new RunResult(NEW_NAME_INPUT_ILLEGAL);
+                        try {
+                            updateDish(did, name);
+                        } catch (IllegalArgumentException ex) {
+                            return new RunResult(ex.getMessage());
                         }
 
-                        Dish dishByName = getDishByName(name);
-                        if (dishByName != null) {
-                            return new RunResult(NEW_NAME_REPEATED);
-                        }
-
-                        dish.setName(name);
                         return new RunResult(UPDATE_DISHS_NAME_SUCCESS);
                     case "-t":
                         int total = -1;
@@ -229,11 +201,13 @@ public final class Menu implements ICommandContainer {
                         } catch (NumberFormatException ex) {
                             // 忽略...
                         }
-                        if (!Dish.checkTotal(total)) {
-                            return new RunResult(CHANGE_DISHS_TOTAL_ILLEGAL);
+
+                        try {
+                            updateDish(did, total);
+                        } catch (IllegalArgumentException ex) {
+                            return new RunResult(ex.getMessage());
                         }
 
-                        dish.setTotal(total);
                         return new RunResult(UPDATE_DISHS_TOTAL_SUCCESS);
                     case "-p":
                         double price = -1d;
@@ -243,11 +217,13 @@ public final class Menu implements ICommandContainer {
                         } catch (NumberFormatException ex) {
                             // 忽略...
                         }
-                        if (!Dish.checkPrice(price)) {
-                            return new RunResult(CHANGE_DISHS_PRICE_ILLEGAL);
+
+                        try {
+                            updateDish(did, price);
+                        } catch (IllegalArgumentException ex) {
+                            return new RunResult(ex.getMessage());
                         }
 
-                        dish.setPrice(price);
                         return new RunResult(UPDATE_DISHS_PRICE_SUCCESS);
                     default:
                         break;
@@ -298,7 +274,11 @@ public final class Menu implements ICommandContainer {
      * @param {String} did
      * @return {*}
      */
-    public Dish getDishById(String did) {
+    public Dish getDishById(String did) throws IllegalArgumentException {
+        if (!Dish.checkDID(did)) {
+            throw new IllegalArgumentException(DID_INPUT_ILLEGAL);
+        }
+
         String key = did.substring(0, 1);
         Vector<Dish> list = dishes.get(key);
         if (list != null) {
@@ -351,6 +331,98 @@ public final class Menu implements ICommandContainer {
         }
 
         return res;
+    }
+
+    /**
+     * @description: 添加菜品
+     * @param {String} did
+     * @param {String} name
+     * @param {double} price
+     * @param {int}    total
+     * @return {*}
+     */
+    public void addDish(String did, String name, double price, int total) throws IllegalArgumentException {
+        Dish dishById = getDishById(did);
+        if (dishById != null) {
+            throw new IllegalArgumentException(DISH_EXISTS);
+        }
+
+        if (!Dish.checkName(name) || !Dish.checkPrice(price) || !Dish.checkTotal(total)) {
+            throw new IllegalArgumentException(NEW_DISHS_ATTRIBUTES_INPUT_ILLEGAL);
+        }
+
+        Dish dishByName = getDishByName(name);
+        if (dishByName != null) {
+            throw new IllegalArgumentException(NAME_REPEATED);
+        }
+
+        String key = did.substring(0, 1);
+        Vector<Dish> list = dishes.get(key);
+        if (list != null) {
+            list.add(new Dish(did, name, price, total));
+        }
+    }
+
+    /**
+     * @description: 修改菜品(名称)
+     * @param {String} did
+     * @param {String} name
+     * @return {*}
+     */
+    public void updateDish(String did, String name) throws IllegalArgumentException {
+        Dish dishById = getDishById(did);
+        if (dishById == null) {
+            throw new IllegalArgumentException(DISH_DOES_NOT_EXIST);
+        }
+
+        if (!Dish.checkName(name)) {
+            throw new IllegalArgumentException(NEW_NAME_INPUT_ILLEGAL);
+        }
+
+        Dish dishByName = getDishByName(name);
+        if (dishByName != null) {
+            throw new IllegalArgumentException(NEW_NAME_REPEATED);
+        }
+
+        dishById.setName(name);
+    }
+
+    /**
+     * @description: 修改菜品(价格)
+     * @param {String} did
+     * @param {double} price
+     * @return {*}
+     */
+    public void updateDish(String did, double price) throws IllegalArgumentException {
+        Dish dishById = getDishById(did);
+        if (dishById == null) {
+            throw new IllegalArgumentException(DISH_DOES_NOT_EXIST);
+        }
+
+        if (!Dish.checkPrice(price)) {
+            throw new IllegalArgumentException(CHANGE_DISHS_PRICE_ILLEGAL);
+        }
+
+        dishById.setPrice(price);
+    }
+
+    /**
+     * @description: 修改菜品(总量)
+     * @param {String} did
+     * @param {int} total
+     * @return {*}
+     */
+    public void updateDish(String did, int total) throws IllegalArgumentException {
+        Dish dishById = getDishById(did);
+        if (dishById == null) {
+            throw new IllegalArgumentException(DISH_DOES_NOT_EXIST);
+        }
+
+        if (!Dish.checkTotal(total)) {
+            throw new IllegalArgumentException(CHANGE_DISHS_TOTAL_ILLEGAL);
+        }
+
+        dishById.setTotal(total);
     }
 
     /**
