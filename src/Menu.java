@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-08 23:22:58
+ * @LastEditTime: 2021-04-09 11:42:15
  * @Description: 菜单类
  */
 import java.util.Arrays;
@@ -48,25 +48,14 @@ public final class Menu implements ICommandContainer {
 
                 return RunResult.empty;
             case 3:
-                Integer pageIndex = null;
-                Integer pageSize = null;
+                return OmsManager.handleRunRequest(() -> {
+                    Integer pageIndex = IntegerUtil.tryParse(runtimeArgs[1], null);
+                    Integer pageSize = IntegerUtil.tryParse(runtimeArgs[2], null);
 
-                try {
-                    pageIndex = Integer.parseInt(runtimeArgs[1]);
-                    pageSize = Integer.parseInt(runtimeArgs[2]);
-                } catch (NumberFormatException ex) {
-                    // 忽略...
-                }
-
-                MenuViewer viewer = new MenuViewer(this, pageIndex, pageSize);
-                try {
+                    MenuViewer viewer = new MenuViewer(this, pageIndex, pageSize);
                     viewer.build().printCurrent();
                     viewer.getBindingView(true).asCurrentView();
-                } catch (IllegalArgumentException ex) {
-                    return new RunResult(ex.getMessage());
-                }
-
-                return RunResult.empty;
+                }, () -> RunResult.empty);
             default:
                 return RunResult.paramsCountIllegal;
         }
@@ -78,25 +67,14 @@ public final class Menu implements ICommandContainer {
             return RunResult.paramsCountIllegal;
         }
 
-        String did = runtimeArgs[1];
-        String name = runtimeArgs[2];
-        double price = -1d;
-        int total = -1;
+        return OmsManager.handleRunRequest(() -> {
+            String did = runtimeArgs[1];
+            String name = runtimeArgs[2];
+            double price = DoubleUtil.tryParse(runtimeArgs[3], -1d);
+            int total = IntegerUtil.tryParse(runtimeArgs[4], -1);
 
-        try {
-            price = Double.parseDouble(runtimeArgs[3]);
-            total = Integer.parseInt(runtimeArgs[4]);
-        } catch (NumberFormatException ex) {
-            // 忽略...
-        }
-
-        try {
             addDish(did, name, price, total);
-        } catch (IllegalArgumentException ex) {
-            return new RunResult(ex.getMessage());
-        }
-
-        return new RunResult(ADD_DISH_SUCCESS);
+        }, () -> new RunResult(ADD_DISH_SUCCESS));
     }));
     // </editor-fold>
     // <editor-fold> 获取菜品gd
@@ -111,19 +89,14 @@ public final class Menu implements ICommandContainer {
 
         switch (runtimeArgs[1]) {
             case "-id":
-                Dish dishById = null;
+                return OmsManager.handleRunRequest(() -> {
+                    Dish dishById = getDishById(runtimeArgs[2]);
+                    if (dishById == null) {
+                        throw new IllegalArgumentException(DISH_DOES_NOT_EXIST);
+                    }
 
-                try {
-                    dishById = getDishById(runtimeArgs[2]);
-                } catch (IllegalArgumentException ex) {
-                    return new RunResult(ex.getMessage());
-                }
-                if (dishById == null) {
-                    return new RunResult(DISH_DOES_NOT_EXIST);
-                }
-
-                System.out.println(dishById);
-                break;
+                    return dishById;
+                }, (dishById) -> new RunResult(dishById.toString()));
             case "-key":
                 switch (runtimeArgs.length) {
                     case 3:
@@ -138,25 +111,14 @@ public final class Menu implements ICommandContainer {
                         }
                         break;
                     case 5:
-                        Integer pageIndex = null;
-                        Integer pageSize = null;
+                        return OmsManager.handleRunRequest(() -> {
+                            Integer pageIndex = IntegerUtil.tryParse(runtimeArgs[3], null);
+                            Integer pageSize = IntegerUtil.tryParse(runtimeArgs[4], null);
 
-                        try {
-                            pageIndex = Integer.parseInt(runtimeArgs[3]);
-                            pageSize = Integer.parseInt(runtimeArgs[4]);
-                        } catch (NumberFormatException ex) {
-                            // 忽略...
-                        }
-
-                        MenuViewer viewer = new MenuViewer(this, runtimeArgs[2], pageIndex, pageSize);
-                        try {
+                            MenuViewer viewer = new MenuViewer(this, runtimeArgs[2], pageIndex, pageSize);
                             viewer.build().printCurrent();
                             viewer.getBindingView(true).asCurrentView();
-                        } catch (IllegalArgumentException ex) {
-                            return new RunResult(ex.getMessage());
-                        }
-
-                        break;
+                        }, () -> RunResult.empty);
                     default:
                         break;
                 }
@@ -184,47 +146,20 @@ public final class Menu implements ICommandContainer {
 
                 switch (runtimeArgs[1]) {
                     case "-n":
-                        String name = runtimeArgs[3];
-
-                        try {
+                        return OmsManager.handleRunRequest(() -> {
+                            String name = runtimeArgs[3];
                             updateDish(did, name);
-                        } catch (IllegalArgumentException ex) {
-                            return new RunResult(ex.getMessage());
-                        }
-
-                        return new RunResult(UPDATE_DISHS_NAME_SUCCESS);
+                        }, () -> new RunResult(UPDATE_DISHS_NAME_SUCCESS));
                     case "-t":
-                        int total = -1;
-
-                        try {
-                            total = Integer.parseInt(runtimeArgs[3]);
-                        } catch (NumberFormatException ex) {
-                            // 忽略...
-                        }
-
-                        try {
+                        return OmsManager.handleRunRequest(() -> {
+                            int total = IntegerUtil.tryParse(runtimeArgs[3], -1);
                             updateDish(did, total);
-                        } catch (IllegalArgumentException ex) {
-                            return new RunResult(ex.getMessage());
-                        }
-
-                        return new RunResult(UPDATE_DISHS_TOTAL_SUCCESS);
+                        }, () -> new RunResult(UPDATE_DISHS_TOTAL_SUCCESS));
                     case "-p":
-                        double price = -1d;
-
-                        try {
-                            price = Double.parseDouble(runtimeArgs[3]);
-                        } catch (NumberFormatException ex) {
-                            // 忽略...
-                        }
-
-                        try {
+                        return OmsManager.handleRunRequest(() -> {
+                            double price = DoubleUtil.tryParse(runtimeArgs[3], -1d);
                             updateDish(did, price);
-                        } catch (IllegalArgumentException ex) {
-                            return new RunResult(ex.getMessage());
-                        }
-
-                        return new RunResult(UPDATE_DISHS_PRICE_SUCCESS);
+                        }, () -> new RunResult(UPDATE_DISHS_PRICE_SUCCESS));
                     default:
                         break;
                 }
@@ -409,7 +344,7 @@ public final class Menu implements ICommandContainer {
     /**
      * @description: 修改菜品(总量)
      * @param {String} did
-     * @param {int} total
+     * @param {int}    total
      * @return {*}
      */
     public void updateDish(String did, int total) throws IllegalArgumentException {
