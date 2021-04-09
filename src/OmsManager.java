@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-26 19:31:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-09 11:43:58
+ * @LastEditTime: 2021-04-09 18:11:18
  * @Description: Oms管理器
  */
 import java.util.Arrays;
@@ -15,15 +15,35 @@ import java.util.function.Supplier;
 public final class OmsManager implements ICommandContainer {
     /**
      * @description: 处理运行请求(无参)
-     * @param {Runnable} action
+     * @param {Runnable}            action
+     * @param {Supplier<RunResult>} success
+     * @return {*} 若有异常, 则返回包含异常信息的运行结果
+     */
+    public static RunResult handleRunRequest(Runnable action, Supplier<RunResult> success) {
+        return handleRunRequest(action, success, (ex) -> new RunResult(ex.getMessage()));
+    }
+
+    /**
+     * @description: 处理运行请求(单参)
+     * @param {Supplier<T>function,Function<T,RunResult>} success
+     * @return {*} 若有异常, 则返回包含异常信息的运行结果
+     */
+    public static <T> RunResult handleRunRequest(Supplier<T> function, Function<T, RunResult> success) {
+        return handleRunRequest(function, success, (ex) -> new RunResult(ex.getMessage()));
+    }
+
+    /**
+     * @description: 处理运行请求(无参)
+     * @param {Runnable}            action
      * @param {Supplier<RunResult>} success
      * @return {*}
      */
-    public static RunResult handleRunRequest(Runnable action, Supplier<RunResult> success) {
+    public static RunResult handleRunRequest(Runnable action, Supplier<RunResult> success,
+            Function<Exception, RunResult> fail) {
         try {
             action.run();
         } catch (Exception ex) {
-            return new RunResult(ex.getMessage());
+            return fail.apply(ex);
         }
 
         return success.get();
@@ -31,16 +51,17 @@ public final class OmsManager implements ICommandContainer {
 
     /**
      * @description: 处理运行请求(单参)
-     * @param {Supplier<T>function,Function<T,RunResult>} success
+     * @param {Supplier<T>function,Function<T,RunResult>success,Function<Exception,RunResult>} fail
      * @return {*}
      */
-    public static <T> RunResult handleRunRequest(Supplier<T> function, Function<T, RunResult> success) {
+    public static <T> RunResult handleRunRequest(Supplier<T> function, Function<T, RunResult> success,
+            Function<Exception, RunResult> fail) {
         T res;
 
         try {
             res = function.get();
         } catch (Exception ex) {
-            return new RunResult(ex.getMessage());
+            return fail.apply(ex);
         }
 
         return success.apply(res);

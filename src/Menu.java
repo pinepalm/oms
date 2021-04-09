@@ -2,15 +2,16 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-09 11:42:15
+ * @LastEditTime: 2021-04-09 18:46:20
  * @Description: 菜单类
  */
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 /**
  * @description: 菜单类
@@ -174,8 +175,8 @@ public final class Menu implements ICommandContainer {
 
     public static final Menu instance = new Menu();
 
-    private final Map<String, Vector<Dish>> dishes;
-    private final Map<String, Vector<Dish>> readonlyDishes;
+    private final Map<String, SortedMap<String, Dish>> dishes;
+    private final Map<String, SortedMap<String, Dish>> readonlyDishes;
 
     /**
      * @description: 默认构造
@@ -184,9 +185,9 @@ public final class Menu implements ICommandContainer {
      */
     private Menu() {
         dishes = new LinkedHashMap<>();
-        dishes.put("H", new Vector<Dish>());// 热菜
-        dishes.put("C", new Vector<Dish>());// 凉菜
-        dishes.put("O", new Vector<Dish>());// 其它
+        dishes.put("H", new TreeMap<String, Dish>());// 热菜
+        dishes.put("C", new TreeMap<String, Dish>());// 凉菜
+        dishes.put("O", new TreeMap<String, Dish>());// 其它
 
         readonlyDishes = Collections.unmodifiableMap(dishes);
     }
@@ -200,7 +201,7 @@ public final class Menu implements ICommandContainer {
      * @param {*}
      * @return {*}
      */
-    public Map<String, Vector<Dish>> getDishes() {
+    public Map<String, SortedMap<String, Dish>> getDishes() {
         return readonlyDishes;
     }
 
@@ -215,16 +216,12 @@ public final class Menu implements ICommandContainer {
         }
 
         String key = did.substring(0, 1);
-        Vector<Dish> list = dishes.get(key);
-        if (list != null) {
-            for (Dish dish : list) {
-                if (did.equals(dish.getDID())) {
-                    return dish;
-                }
-            }
+        SortedMap<String, Dish> map = dishes.get(key);
+        if (map == null) {
+            return null;
         }
 
-        return null;
+        return map.get(did);
     }
 
     /**
@@ -233,8 +230,8 @@ public final class Menu implements ICommandContainer {
      * @return {*}
      */
     public Dish getDishByName(String name) {
-        for (Entry<String, Vector<Dish>> entry : dishes.entrySet()) {
-            for (Dish dish : entry.getValue()) {
+        for (SortedMap<String, Dish> map : dishes.values()) {
+            for (Dish dish : map.values()) {
                 if (name.equals(dish.getName())) {
                     return dish;
                 }
@@ -253,14 +250,10 @@ public final class Menu implements ICommandContainer {
         Vector<Dish> res = new Vector<>();
 
         String lowercaseKeyword = keyword.toLowerCase();
-        for (Entry<String, Vector<Dish>> entry : dishes.entrySet()) {
-            Vector<Dish> list = entry.getValue();
-            if (list.size() > 0) {
-                list.sort((d1, d2) -> d1.getDID().compareTo(d2.getDID()));
-                for (Dish dish : list) {
-                    if (dish.getName().toLowerCase().contains(lowercaseKeyword)) {
-                        res.add(dish);
-                    }
+        for (SortedMap<String, Dish> map : dishes.values()) {
+            for (Dish dish : map.values()) {
+                if (dish.getName().toLowerCase().contains(lowercaseKeyword)) {
+                    res.add(dish);
                 }
             }
         }
@@ -292,9 +285,9 @@ public final class Menu implements ICommandContainer {
         }
 
         String key = did.substring(0, 1);
-        Vector<Dish> list = dishes.get(key);
-        if (list != null) {
-            list.add(new Dish(did, name, price, total));
+        SortedMap<String, Dish> map = dishes.get(key);
+        if (map != null) {
+            map.put(did, new Dish(did, name, price, total));
         }
     }
 
@@ -366,9 +359,8 @@ public final class Menu implements ICommandContainer {
      * @return {*}
      */
     public boolean isEmpty() {
-        for (Entry<String, Vector<Dish>> entry : dishes.entrySet()) {
-            Vector<Dish> list = entry.getValue();
-            if (!list.isEmpty()) {
+        for (SortedMap<String, Dish> map : dishes.values()) {
+            if (!map.isEmpty()) {
                 return false;
             }
         }
@@ -385,12 +377,10 @@ public final class Menu implements ICommandContainer {
         boolean hasItems = false;
         int i = 1;
 
-        for (Entry<String, Vector<Dish>> entry : dishes.entrySet()) {
-            Vector<Dish> list = entry.getValue();
-            if (!list.isEmpty()) {
+        for (SortedMap<String, Dish> map : dishes.values()) {
+            if (!map.isEmpty()) {
                 hasItems = true;
-                list.sort((d1, d2) -> d1.getDID().compareTo(d2.getDID()));
-                for (Dish dish : list) {
+                for (Dish dish : map.values()) {
                     System.out.println(String.format("%d. %s", i++, dish));
                 }
             }
