@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-21 00:19:12
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-03-25 19:39:59
+ * @LastEditTime: 2021-04-15 22:20:45
  * @Description: 人类
  */
 import java.util.regex.Pattern;
@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 public class Person {
     /**
      * @description: 检查性别
-     * @param {char} sex
+     * @param {String} sex
      * @return {*}
      */
-    public static boolean checkSex(char sex) {
-        return sex == 'M' || sex == 'F';
+    public static boolean checkSex(String sex) {
+        return Pattern.matches("^(M|F)$", sex);
     }
 
     /**
@@ -29,39 +29,78 @@ public class Person {
         return Pattern.matches("^[1]([3-7][0-9]|[8][0-7])[0-9]{4}[0]([3][1-9]|[4-6][0-9]|[7][0-1])(0|1)$", phoneNum);
     }
 
-    private String userName;
-    private char sex;
+    /**
+     * @description: 检查标识序列号
+     * @param {String} pid
+     * @return {*}
+     */
+    public static boolean checkPID(String pid) {
+        return Pattern.matches("^(Cu|Wa|Bo|Co)[0-9]{5}$", pid);
+    }
+
+    /**
+     * @description: 检查密码检查标识序列号
+     * @param {String} pwd
+     * @return {*}
+     */
+    public static boolean checkPwd(String pwd) {
+        return Pattern.matches("^(?![0-9]+$)(?![a-zA-Z]+$)[\\x21-\\x7e]{8,18}$", pwd);
+    }
+
+    private String pid;
+    private String pwd;
+    private String name;
+    private String sex;
     private String phoneNum;
 
-    public Person(String userName, char sex, String phoneNum) {
-        setUserName(userName);
+    public Person(String name, String sex, String phoneNum) {
+        setName(name);
         setSex(sex);
         setPhoneNum(phoneNum);
     }
 
-    public String getUserName() {
-        return userName;
-    }
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public String getPID() {
+        return pid;
     }
 
-    public char getSex() {
+    public void setPID(String pid) {
+        this.pid = pid;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSex() {
         return sex;
     }
-    public void setSex(char sex) {
+
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
     public String getPhoneNum() {
         return phoneNum;
     }
+
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
     }
 
     @Override
     public String toString() {
-        return String.format("Name:%s\nSex:%c\nPhone:%s", getUserName(), getSex(), getPhoneNum());
+        return String.format("Name:%s\nSex:%s\nPhone:%s", getName(), getSex(), getPhoneNum());
     }
 }

@@ -2,21 +2,21 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-09 18:46:20
+ * @LastEditTime: 2021-04-15 22:53:08
  * @Description: 菜单类
  */
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 /**
  * @description: 菜单类
  */
-public final class Menu implements ICommandContainer {
+public final class Menu extends GroupingBase<String, Dish> implements ICommandContainer {
     // <editor-fold> 字符串常量
     private static final String INPUT_ILLEGAL = "%s input illegal";
     private static final String DID_INPUT_ILLEGAL = String.format(INPUT_ILLEGAL, "Did");
@@ -39,15 +39,21 @@ public final class Menu implements ICommandContainer {
     private static final String DISH_EXISTS = "Dish exists";
     private static final String DISH_DOES_NOT_EXIST = "Dish does not exist";
     private static final String EMPTY_MENU = "Empty Menu";
+
+    private static final String HOT = "H";
+    private static final String COOL = "C";
+    private static final String OTHER = "O";
+    private static final String DID = "DID";
+    private static final String NAME = "Name";
     // </editor-fold>
 
     // <editor-fold> 打印菜单pm
     private final Lazy<StandardCommand> printMenuCommand = new Lazy<>(() -> new StandardCommand("pm", (runtimeArgs) -> {
         switch (runtimeArgs.length) {
             case 1:
-                print();
-
-                return RunResult.empty;
+                return OmsManager.handleRunRequest(() -> {
+                    print();
+                }, () -> RunResult.empty);
             case 3:
                 return OmsManager.handleRunRequest(() -> {
                     Integer pageIndex = IntegerUtil.tryParse(runtimeArgs[1], null);
@@ -101,16 +107,17 @@ public final class Menu implements ICommandContainer {
             case "-key":
                 switch (runtimeArgs.length) {
                     case 3:
-                        Vector<Dish> list = getDishByKeyWord(runtimeArgs[2]);
-                        if (list.isEmpty()) {
-                            return new RunResult(DISH_DOES_NOT_EXIST);
-                        }
+                        return OmsManager.handleRunRequest(() -> {
+                            Vector<Dish> list = getDishByKeyWord(runtimeArgs[2]);
+                            if (list.isEmpty()) {
+                                throw new IllegalArgumentException(DISH_DOES_NOT_EXIST);
+                            }
 
-                        int i = 1;
-                        for (Dish dish : list) {
-                            System.out.println(String.format("%d. %s", i++, dish));
-                        }
-                        break;
+                            int i = 1;
+                            for (Dish dish : list) {
+                                System.out.println(String.format("%d. %s", i++, dish));
+                            }
+                        }, () -> RunResult.empty);
                     case 5:
                         return OmsManager.handleRunRequest(() -> {
                             Integer pageIndex = IntegerUtil.tryParse(runtimeArgs[3], null);
@@ -175,34 +182,25 @@ public final class Menu implements ICommandContainer {
 
     public static final Menu instance = new Menu();
 
-    private final Map<String, SortedMap<String, Dish>> dishes;
-    private final Map<String, SortedMap<String, Dish>> readonlyDishes;
-
     /**
      * @description: 默认构造
      * @param {*}
      * @return {*}
      */
     private Menu() {
-        dishes = new LinkedHashMap<>();
-        dishes.put("H", new TreeMap<String, Dish>());// 热菜
-        dishes.put("C", new TreeMap<String, Dish>());// 凉菜
-        dishes.put("O", new TreeMap<String, Dish>());// 其它
+        Comparator<Dish> dishComparator = (d1, d2) -> d1.getDID().compareTo(d2.getDID());
 
-        readonlyDishes = Collections.unmodifiableMap(dishes);
+        items.put(HOT, new TreeSet<Dish>(dishComparator));// 热菜
+        items.put(COOL, new TreeSet<Dish>(dishComparator));// 凉菜
+        items.put(OTHER, new TreeSet<Dish>(dishComparator));// 其它
+
+        indexers.put(DID, new HashMap<Object, Dish>());
+        indexers.put(NAME, new HashMap<Object, Dish>());
     }
 
+    @Override
     public Iterable<ICommand> getCommands() {
         return commands.getValue();
-    }
-
-    /**
-     * @description: 获取菜品列表的只读映射
-     * @param {*}
-     * @return {*}
-     */
-    public Map<String, SortedMap<String, Dish>> getDishes() {
-        return readonlyDishes;
     }
 
     /**
@@ -215,13 +213,7 @@ public final class Menu implements ICommandContainer {
             throw new IllegalArgumentException(DID_INPUT_ILLEGAL);
         }
 
-        String key = did.substring(0, 1);
-        SortedMap<String, Dish> map = dishes.get(key);
-        if (map == null) {
-            return null;
-        }
-
-        return map.get(did);
+        return getIndexer(DID).get(did);
     }
 
     /**
@@ -230,15 +222,7 @@ public final class Menu implements ICommandContainer {
      * @return {*}
      */
     public Dish getDishByName(String name) {
-        for (SortedMap<String, Dish> map : dishes.values()) {
-            for (Dish dish : map.values()) {
-                if (name.equals(dish.getName())) {
-                    return dish;
-                }
-            }
-        }
-
-        return null;
+        return getIndexer(NAME).get(name);
     }
 
     /**
@@ -250,8 +234,8 @@ public final class Menu implements ICommandContainer {
         Vector<Dish> res = new Vector<>();
 
         String lowercaseKeyword = keyword.toLowerCase();
-        for (SortedMap<String, Dish> map : dishes.values()) {
-            for (Dish dish : map.values()) {
+        for (Set<Dish> set : items.values()) {
+            for (Dish dish : set) {
                 if (dish.getName().toLowerCase().contains(lowercaseKeyword)) {
                     res.add(dish);
                 }
@@ -285,9 +269,12 @@ public final class Menu implements ICommandContainer {
         }
 
         String key = did.substring(0, 1);
-        SortedMap<String, Dish> map = dishes.get(key);
-        if (map != null) {
-            map.put(did, new Dish(did, name, price, total));
+        Set<Dish> set = items.get(key);
+        if (set != null) {
+            Dish newDish = new Dish(did, name, price, total);
+            set.add(newDish);
+            getIndexer(DID).put(did, newDish);
+            getIndexer(NAME).put(name, newDish);
         }
     }
 
@@ -312,7 +299,10 @@ public final class Menu implements ICommandContainer {
             throw new IllegalArgumentException(NEW_NAME_REPEATED);
         }
 
+        String oldName = dishById.getName();
+        Map<Object, Dish> dishesNameIndexer = getIndexer(NAME);
         dishById.setName(name);
+        dishesNameIndexer.put(name, dishesNameIndexer.remove(oldName));
     }
 
     /**
@@ -354,40 +344,20 @@ public final class Menu implements ICommandContainer {
     }
 
     /**
-     * @description: 菜单是否为空
-     * @param {*}
-     * @return {*}
-     */
-    public boolean isEmpty() {
-        for (SortedMap<String, Dish> map : dishes.values()) {
-            if (!map.isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * @description: 打印菜单
      * @param {*}
      * @return {*}
      */
-    public void print() {
-        boolean hasItems = false;
-        int i = 1;
-
-        for (SortedMap<String, Dish> map : dishes.values()) {
-            if (!map.isEmpty()) {
-                hasItems = true;
-                for (Dish dish : map.values()) {
-                    System.out.println(String.format("%d. %s", i++, dish));
-                }
-            }
+    public void print() throws IllegalStateException {
+        if (isEmpty()) {
+            throw new IllegalStateException(EMPTY_MENU);
         }
 
-        if (!hasItems) {
-            System.out.println(EMPTY_MENU);
+        int i = 1;
+        for (Set<Dish> set : items.values()) {
+            for (Dish dish : set) {
+                System.out.println(String.format("%d. %s", i++, dish));
+            }
         }
     }
 }

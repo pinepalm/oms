@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-21 17:02:44
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-06 00:11:06
+ * @LastEditTime: 2021-04-15 13:07:25
  * @Description: Oms核心运行器
  */
 import java.util.HashMap;
@@ -40,8 +40,8 @@ public final class OmsCoreRunner {
     private EventHandler<EventArgs> onViewClosed;
 
     private OmsCoreRunner(OmsCoreView view) {
-        exactMatchCmds = new HashMap<>();
-        standardCmds = new HashMap<>();
+        exactMatchCmds = new HashMap<String, ExactMatchCommand>();
+        standardCmds = new HashMap<String, StandardCommand>();
 
         onViewClosed = (sender, args) -> {
             OmsCoreView closedView = (OmsCoreView) sender;
@@ -50,8 +50,18 @@ public final class OmsCoreRunner {
         };
 
         runnerDefinition = view.runnerDefinition;
+        load(runnerDefinition.getCommandContainers());
         
-        for (ICommandContainer container : runnerDefinition.getCommandContainers()) {
+        view.closed.addEventHandler(onViewClosed);
+    }
+
+    /**
+     * @description: 加载命令容器
+     * @param {ICommandContainer...} containers
+     * @return {*}
+     */
+    public OmsCoreRunner load(ICommandContainer... containers) {
+        for (ICommandContainer container : containers) {
             for (ICommand command : container.getCommands()) {
                 if (command instanceof ExactMatchCommand) {
                     exactMatchCmds.put(command.getName(), (ExactMatchCommand) command);
@@ -61,7 +71,26 @@ public final class OmsCoreRunner {
             }
         }
 
-        view.closed.addEventHandler(onViewClosed);
+        return this;
+    }
+
+    /**
+     * @description: 卸载命令容器
+     * @param {ICommandContainer...} containers
+     * @return {*}
+     */
+    public OmsCoreRunner unload(ICommandContainer... containers) {
+        for (ICommandContainer container : containers) {
+            for (ICommand command : container.getCommands()) {
+                if (command instanceof ExactMatchCommand) {
+                    exactMatchCmds.remove(command.getName());
+                } else if (command instanceof StandardCommand) {
+                    standardCmds.remove(command.getName());
+                }
+            }
+        }
+
+        return this;
     }
 
     /**

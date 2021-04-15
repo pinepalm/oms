@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-26 19:31:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-09 18:11:18
+ * @LastEditTime: 2021-04-15 00:40:17
  * @Description: Oms管理器
  */
 import java.util.Arrays;
@@ -73,14 +73,45 @@ public final class OmsManager implements ICommandContainer {
 
     // <editor-fold> 退出QUIT
     private final Lazy<ExactMatchCommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("QUIT", () -> {
-        System.out.println(GOOD_BYE);
-        OmsCoreView.mainView.close();
+        return handleRunRequest(() -> {
+            System.out.println(GOOD_BYE);
+            OmsCoreView.mainView.close();
+        }, () -> RunResult.empty);
+    }));
+    // </editor-fold>
+    // <editor-fold> 进入超级用户模式SUDO
+    private final Lazy<ExactMatchCommand> sudoCommand = new Lazy<>(() -> new ExactMatchCommand("SUDO", () -> {
+
+        return RunResult.empty;
+    }));
+    // </editor-fold>
+    // <editor-fold> 登录login
+    private final Lazy<StandardCommand> loginCommand = new Lazy<>(() -> new StandardCommand("login", (runtimeArgs) -> {
+        if (runtimeArgs.length < 2 || !Arrays.asList("-i", "-n").contains(runtimeArgs[1])) {
+            return RunResult.commandNotExist;
+        }
+
+        if (runtimeArgs.length != 4) {
+            return RunResult.paramsCountIllegal;
+        }
+
+        switch (runtimeArgs[1]) {
+            case "-i":
+                
+                break;
+            case "-n":
+                
+                break;
+            default:
+                break;
+        }
 
         return RunResult.empty;
     }));
     // </editor-fold>
     // <editor-fold> 命令枚举
-    private final Lazy<Iterable<ICommand>> commands = new Lazy<>(() -> Arrays.asList(quitCommand.getValue()));
+    private final Lazy<Iterable<ICommand>> commands = new Lazy<>(
+            () -> Arrays.asList(quitCommand.getValue(), sudoCommand.getValue(), loginCommand.getValue()));
     // </editor-fold>
 
     public static final OmsManager instance = new OmsManager();
@@ -89,6 +120,7 @@ public final class OmsManager implements ICommandContainer {
 
     }
 
+    @Override
     public Iterable<ICommand> getCommands() {
         return commands.getValue();
     }

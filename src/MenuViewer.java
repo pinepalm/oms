@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-28 11:31:50
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-08 23:30:42
+ * @LastEditTime: 2021-04-15 00:37:25
  * @Description: 菜单查看器
  */
 import java.util.Arrays;
@@ -29,30 +29,30 @@ public final class MenuViewer implements ICommandContainer {
 
     // <editor-fold> 下一页n
     private final Lazy<ExactMatchCommand> nextCommand = new Lazy<>(() -> new ExactMatchCommand("n", () -> {
-        next();
-
-        return RunResult.empty;
+        return OmsManager.handleRunRequest(() -> {
+            next();
+        }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 上一页l
     private final Lazy<ExactMatchCommand> lastCommand = new Lazy<>(() -> new ExactMatchCommand("l", () -> {
-        last();
-
-        return RunResult.empty;
+        return OmsManager.handleRunRequest(() -> {
+            last();
+        }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 第一页f
     private final Lazy<ExactMatchCommand> firstCommand = new Lazy<>(() -> new ExactMatchCommand("f", () -> {
-        first();
-
-        return RunResult.empty;
+        return OmsManager.handleRunRequest(() -> {
+            first();
+        }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 退出q
     private final Lazy<ExactMatchCommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("q", () -> {
-        close();
-
-        return new RunResult(EXIT_PAGE_CHECK_MODE);
+        return OmsManager.handleRunRequest(() -> {
+            close();
+        }, () -> new RunResult(EXIT_PAGE_CHECK_MODE));
     }));
     // </editor-fold>
     // <editor-fold> 命令枚举
@@ -82,6 +82,7 @@ public final class MenuViewer implements ICommandContainer {
         this.pageSize = pageSize;
     }
 
+    @Override
     public Iterable<ICommand> getCommands() {
         return commands.getValue();
     }
