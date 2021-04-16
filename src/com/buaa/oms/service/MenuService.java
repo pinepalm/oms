@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 11:19:01
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:38:10
+ * @LastEditTime: 2021-04-16 14:58:07
  * @Description: 菜单服务
  */
 package com.buaa.oms.service;
@@ -16,6 +16,7 @@ import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
 import com.buaa.oms.dao.Menu;
+import com.buaa.oms.dao.MenuViewer;
 import com.buaa.oms.model.Dish;
 import com.buaa.util.DoubleUtil;
 import com.buaa.util.IntegerUtil;
@@ -49,7 +50,9 @@ public final class MenuService implements ICommandContainer {
 
                     MenuViewer viewer = new MenuViewer(Menu.instance, pageIndex, pageSize);
                     viewer.build().printCurrent();
-                    viewer.getBindingView(true).asCurrentView();
+
+                    MenuViewerService viewerService = new MenuViewerService(viewer);
+                    viewerService.getBindingView(true).asCurrentView();
                 }, () -> RunResult.empty);
             default:
                 return RunResult.paramsCountIllegal;
@@ -113,7 +116,9 @@ public final class MenuService implements ICommandContainer {
 
                             MenuViewer viewer = new MenuViewer(Menu.instance, runtimeArgs[2], pageIndex, pageSize);
                             viewer.build().printCurrent();
-                            viewer.getBindingView(true).asCurrentView();
+
+                            MenuViewerService viewerService = new MenuViewerService(viewer);
+                            viewerService.getBindingView(true).asCurrentView();
                         }, () -> RunResult.empty);
                     default:
                         break;
