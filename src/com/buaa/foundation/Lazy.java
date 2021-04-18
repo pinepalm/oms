@@ -5,7 +5,7 @@
  * @LastEditTime: 2021-04-16 00:58:36
  * @Description: 懒加载类
  */
-package com.buaa.util;
+package com.buaa.foundation;
 
 import java.util.function.Supplier;
 

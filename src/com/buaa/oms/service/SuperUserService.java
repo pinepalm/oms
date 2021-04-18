@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-15 00:58:25
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:39:02
+ * @LastEditTime: 2021-04-18 14:17:36
  * @Description: 超级用户服务
  */
 package com.buaa.oms.service;
@@ -14,12 +14,13 @@ import com.buaa.appmodel.cli.RunResult;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
-import com.buaa.util.Lazy;
+import com.buaa.foundation.IClosable;
+import com.buaa.foundation.Lazy;
 
 /**
  * @description: 超级用户服务
  */
-public final class SuperUserService implements ICommandContainer {
+public final class SuperUserService implements ICommandContainer, IClosable {
     // <editor-fold> 字符串常量
     private static final String SUCCESS = "%s success";
     private static final String ILLEGAL = "%s illegal";
@@ -47,6 +48,7 @@ public final class SuperUserService implements ICommandContainer {
         return commands.getValue();
     }
 
+    @Override
     public void close() {
         
     }

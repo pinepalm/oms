@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 10:38:42
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:39:25
+ * @LastEditTime: 2021-04-18 14:40:08
  * @Description: Oms应用
  */
 package com.buaa.oms;
@@ -14,34 +14,47 @@ import com.buaa.appmodel.cli.RunResult;
 import com.buaa.appmodel.core.event.EventArgs;
 import com.buaa.appmodel.core.event.EventHandler;
 import com.buaa.appmodel.core.input.ICommandContainer;
+import com.buaa.foundation.Lazy;
 import com.buaa.oms.service.MenuService;
 import com.buaa.oms.service.OmsService;
 import com.buaa.oms.service.PersonListService;
-import com.buaa.util.Lazy;
 
 /**
  * @description: Oms应用
  */
 public final class OmsApp extends CliApp {
-    public static OmsApp instance = new OmsApp();
-    
+    private static OmsApp instance;
+
+    public static OmsApp getInstance() {
+        if (instance == null)
+            instance = new OmsApp();
+            
+        return instance;
+    }
+
     private EventHandler<EventArgs> onMainViewClosed;
-    
+
     private OmsApp() {
 
     }
-    
+
     @Override
     protected CliAppView openMainView() {
         onMainViewClosed = (sender, args) -> {
             CliAppView mainView = (CliAppView) sender;
             mainView.closed.removeEventHandler(onMainViewClosed);
-            System.exit(0);
+            close();
         };
 
         CliAppView mainView = openNewView(new MainRunnerDefinition()).asCurrentView();
         mainView.closed.addEventHandler(onMainViewClosed);
         return mainView;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        instance = null;
     }
 }
 

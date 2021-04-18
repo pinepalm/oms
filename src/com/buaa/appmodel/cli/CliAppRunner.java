@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 10:17:14
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:36:19
+ * @LastEditTime: 2021-04-18 14:55:57
  * @Description: 命令行应用运行器
  */
 package com.buaa.appmodel.cli;
@@ -19,51 +19,20 @@ import com.buaa.appmodel.core.input.ICommandContainer;
  * @description: 命令行应用运行器
  */
 public final class CliAppRunner {
-    private static final Map<CliApp, Map<CliAppView, CliAppRunner>> runners = new HashMap<>();
-
-    /**
-     * @description: 获取与当前视图关联的 CliAppRunner 对象
-     * @param {*}
-     * @return {*}
-     */
-    public static CliAppRunner getForCurrentView(CliApp app) {
-        CliAppView view = app.getCurrentView();
-        if (view == null)
-            return null;
-
-        Map<CliAppView, CliAppRunner> viewRunners = runners.get(app);
-        if (viewRunners == null) {
-            viewRunners = new HashMap<CliAppView, CliAppRunner>();
-            runners.put(app, viewRunners);
-        }
-
-        CliAppRunner runner = viewRunners.get(view);
-        if (runner == null) {
-            runner = new CliAppRunner(view);
-            viewRunners.put(view, runner);
-        }
-
-        return runner;
-    }
-
     private final Map<String, ExactMatchCommand> exactMatchCmds;
     private final Map<String, StandardCommand> standardCmds;
     private final IRunnerDefinition runnerDefinition;
 
     private EventHandler<EventArgs> onViewClosed;
 
-    private CliAppRunner(CliAppView view) {
+    CliAppRunner(CliAppView view) {
         exactMatchCmds = new HashMap<String, ExactMatchCommand>();
         standardCmds = new HashMap<String, StandardCommand>();
 
         onViewClosed = (sender, args) -> {
             CliAppView closedView = (CliAppView) sender;
             closedView.closed.removeEventHandler(onViewClosed);
-            
-            Map<CliAppView, CliAppRunner> viewRunners = runners.get(closedView.bindingApp);
-            if (viewRunners != null) {
-                viewRunners.remove(closedView);
-            }
+            closedView.bindingApp.runnerHost.runners.remove(closedView);
         };
 
         runnerDefinition = view.runnerDefinition;

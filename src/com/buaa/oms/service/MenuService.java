@@ -15,12 +15,12 @@ import com.buaa.appmodel.cli.StandardCommand;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
+import com.buaa.foundation.Lazy;
 import com.buaa.oms.dao.Menu;
 import com.buaa.oms.dao.MenuViewer;
 import com.buaa.oms.model.Dish;
 import com.buaa.util.DoubleUtil;
 import com.buaa.util.IntegerUtil;
-import com.buaa.util.Lazy;
 
 /**
  * @description: 菜单服务

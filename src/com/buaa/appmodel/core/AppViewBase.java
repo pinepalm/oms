@@ -9,12 +9,13 @@ package com.buaa.appmodel.core;
 
 import com.buaa.appmodel.core.event.Event;
 import com.buaa.appmodel.core.event.EventArgs;
+import com.buaa.foundation.IClosable;
 
 /**
  * @description: 应用视图基类
  */
 @SuppressWarnings("rawtypes")
-public abstract class AppViewBase<L extends AppViewBase, A extends AppBase> {
+public abstract class AppViewBase<L extends AppViewBase, A extends AppBase> implements IClosable {
     public final Event<EventArgs> closed;
 
     public final A bindingApp;
@@ -64,11 +65,7 @@ public abstract class AppViewBase<L extends AppViewBase, A extends AppBase> {
         return (L) this;
     }
 
-    /**
-     * @description: 关闭
-     * @param {*}
-     * @return {*}
-     */
+    @Override
     public void close() {
         if (bindingApp.views.remove(this)) {
             closed.invoke(this, null);

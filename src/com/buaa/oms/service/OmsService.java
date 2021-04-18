@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-26 19:31:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:41:02
+ * @LastEditTime: 2021-04-18 15:04:06
  * @Description: Oms服务
  */
 package com.buaa.oms.service;
@@ -15,8 +15,8 @@ import com.buaa.appmodel.cli.StandardCommand;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
+import com.buaa.foundation.Lazy;
 import com.buaa.oms.OmsApp;
-import com.buaa.util.Lazy;
 
 /**
  * @description: Oms服务
@@ -30,7 +30,7 @@ public final class OmsService implements ICommandContainer {
     private final Lazy<ExactMatchCommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("QUIT", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             System.out.println(GOOD_BYE);
-            OmsApp.instance.mainView.close();
+            OmsApp.getInstance().close();
         }, () -> RunResult.empty);
     }));
     // </editor-fold>

@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import com.buaa.foundation.collections.GroupingBase;
 import com.buaa.oms.model.Dish;
-import com.buaa.util.collections.GroupingBase;
 
 /**
  * @description: 菜单类

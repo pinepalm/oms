@@ -11,8 +11,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import com.buaa.foundation.collections.GroupingBase;
 import com.buaa.oms.model.Person;
-import com.buaa.util.collections.GroupingBase;
 
 /**
  * @description: 人员列表类

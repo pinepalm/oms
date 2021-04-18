@@ -16,14 +16,15 @@ import com.buaa.appmodel.cli.RunResult;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
+import com.buaa.foundation.IClosable;
+import com.buaa.foundation.Lazy;
 import com.buaa.oms.OmsApp;
 import com.buaa.oms.dao.MenuViewer;
-import com.buaa.util.Lazy;
 
 /**
  * @description: 菜单查看器服务
  */
-public final class MenuViewerService implements ICommandContainer {
+public final class MenuViewerService implements ICommandContainer, IClosable {
     // <editor-fold> 字符串常量
     private static final String EXIT_PAGE_CHECK_MODE = "Exit page check mode";
     // </editor-fold>
@@ -83,18 +84,19 @@ public final class MenuViewerService implements ICommandContainer {
             return bindingView;
 
         if (createIfNotExist) {
-            bindingView = OmsApp.instance.openNewView(new MenuViewerRunnerDefinition(this));
+            bindingView = OmsApp.getInstance().openNewView(new MenuViewerRunnerDefinition(this));
         }
 
         return bindingView;
     }
 
+    @Override
     public void close() {
         viewer = null;
         CliAppView bindingView = getBindingView(false);
         if (bindingView != null) {
             bindingView.close();
-            OmsApp.instance.mainView.asCurrentView();
+            OmsApp.getInstance().mainView.asCurrentView();
         }
     }
 }

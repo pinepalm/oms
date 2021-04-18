@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 01:58:41
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 10:16:15
+ * @LastEditTime: 2021-04-18 14:24:40
  * @Description: 应用基类
  */
 package com.buaa.appmodel.core;
@@ -12,19 +12,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.buaa.appmodel.core.event.Event;
+import com.buaa.appmodel.core.event.EventArgs;
+import com.buaa.foundation.IClosable;
+
 /**
  * @description: 应用基类
  */
 @SuppressWarnings("rawtypes")
-public abstract class AppBase<V extends AppViewBase> {
+public abstract class AppBase<V extends AppViewBase> implements IClosable {
     protected final List<V> views = new ArrayList<>();
     protected final List<V> readonlyViews = Collections.unmodifiableList(views);
 
+    public final Event<EventArgs> closed;
     public final V mainView;
 
     protected AppBase() {
         AppHost.apps.add(this);
         mainView = openMainView();
+        closed = new Event<>();
     }
 
     protected abstract V openMainView();
@@ -70,5 +76,12 @@ public abstract class AppBase<V extends AppViewBase> {
      */
     public List<V> getViews() {
         return readonlyViews;
+    }
+
+    @Override
+    public void close() {
+        if (AppHost.apps.remove(this)) {
+            closed.invoke(this, null);
+        }
     }
 }

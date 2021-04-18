@@ -14,8 +14,8 @@ import com.buaa.appmodel.cli.StandardCommand;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
+import com.buaa.foundation.Lazy;
 import com.buaa.oms.dao.PersonList;
-import com.buaa.util.Lazy;
 
 /**
  * @description: 人员列表服务

@@ -5,7 +5,7 @@
  * @LastEditTime: 2021-04-16 00:51:22
  * @Description: 组基类
  */
-package com.buaa.util.collections;
+package com.buaa.foundation.collections;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

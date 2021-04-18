@@ -15,7 +15,7 @@ import com.buaa.appmodel.cli.StandardCommand;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
-import com.buaa.util.Lazy;
+import com.buaa.foundation.Lazy;
 
 /**
  * @description: 用户服务
