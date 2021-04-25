@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-28 11:31:50
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 14:57:09
+ * @LastEditTime: 2021-04-24 11:55:52
  * @Description: 菜单查看器
  */
 package com.buaa.oms.dao;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import com.buaa.oms.model.Dish;
 
 /**
- * @description: 菜单查看器
+ * 菜单查看器
  */
 public final class MenuViewer {
     // <editor-fold> 字符串常量
@@ -51,9 +51,10 @@ public final class MenuViewer {
     }
 
     /**
-     * @description: 构建
-     * @param {*}
-     * @return {*}
+     * 构建
+     * 
+     * @return 自身
+     * @throws IllegalArgumentException
      */
     public MenuViewer build() throws IllegalArgumentException {
         if (menu == null || menu.isEmpty()) {
@@ -75,6 +76,9 @@ public final class MenuViewer {
         return this;
     }
 
+    /**
+     * 打印当前页
+     */
     public void printCurrent() {
         if (dishList == null)
             return;
@@ -89,6 +93,11 @@ public final class MenuViewer {
         System.out.println(NEXT_LAST_FIRST_QUIT);
     }
 
+    /**
+     * 下一页
+     * 
+     * @throws IllegalStateException
+     */
     public void next() throws IllegalStateException {
         int index = current + 1;
         if (index > pagesCount) {
@@ -99,6 +108,11 @@ public final class MenuViewer {
         printCurrent();
     }
 
+    /**
+     * 上一页
+     * 
+     * @throws IllegalStateException
+     */
     public void last() throws IllegalStateException {
         int index = current - 1;
         if (index < 1) {
@@ -109,6 +123,9 @@ public final class MenuViewer {
         printCurrent();
     }
 
+    /**
+     * 第一页
+     */
     public void first() {
         current = 1;
         printCurrent();

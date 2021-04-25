@@ -2,35 +2,32 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 14:25:59
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 14:58:00
+ * @LastEditTime: 2021-04-25 16:29:47
  * @Description: 菜单查看器服务
  */
 package com.buaa.oms.service;
 
 import java.util.Arrays;
 
-import com.buaa.appmodel.cli.CliAppView;
 import com.buaa.appmodel.cli.ExactMatchCommand;
 import com.buaa.appmodel.cli.IRunnerDefinition;
 import com.buaa.appmodel.cli.RunResult;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
 import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
-import com.buaa.foundation.IClosable;
 import com.buaa.foundation.Lazy;
-import com.buaa.oms.OmsApp;
 import com.buaa.oms.dao.MenuViewer;
 
 /**
- * @description: 菜单查看器服务
+ * 菜单查看器服务
  */
-public final class MenuViewerService implements ICommandContainer, IClosable {
+public final class MenuViewerService extends OmsEmbeddedEnvService {
     // <editor-fold> 字符串常量
     private static final String EXIT_PAGE_CHECK_MODE = "Exit page check mode";
+    private static final String CALL_INNER_METHOD_ILLEGAL = "Call inner method illegal";
     // </editor-fold>
 
     private MenuViewer viewer;
-    private CliAppView bindingView;
 
     // <editor-fold> 下一页n
     private final Lazy<ExactMatchCommand> nextCommand = new Lazy<>(() -> new ExactMatchCommand("n", () -> {
@@ -74,55 +71,41 @@ public final class MenuViewerService implements ICommandContainer, IClosable {
         return commands.getValue();
     }
 
-    /**
-     * @description: 获取绑定的视图
-     * @param {boolean} createIfNotExist
-     * @return {*}
-     */
-    public CliAppView getBindingView(boolean createIfNotExist) {
-        if (bindingView != null)
-            return bindingView;
-
-        if (createIfNotExist) {
-            bindingView = OmsApp.getInstance().openNewView(new MenuViewerRunnerDefinition(this));
-        }
-
-        return bindingView;
+    @Override
+    protected IRunnerDefinition createRunnerDefinitionInternal() {
+        return new MenuViewerRunnerDefinition();
     }
 
     @Override
     public void close() {
+        super.close();
+
         viewer = null;
-        CliAppView bindingView = getBindingView(false);
-        if (bindingView != null) {
-            bindingView.close();
-            OmsApp.getInstance().mainView.asCurrentView();
+    }
+
+    private final class MenuViewerRunnerDefinition implements IRunnerDefinition {
+        private final Lazy<ICommandContainer[]> containers;
+    
+        public MenuViewerRunnerDefinition() {
+            containers = new Lazy<>(() -> {
+                ICommandContainer[] containers = { MenuViewerService.this };
+                return containers;
+            });
         }
-    }
-}
-
-final class MenuViewerRunnerDefinition implements IRunnerDefinition {
-    private final Lazy<ICommandContainer[]> containers;
-
-    public MenuViewerRunnerDefinition(MenuViewerService viewerService) {
-        containers = new Lazy<>(() -> {
-            ICommandContainer[] containers = { viewerService };
-            return containers;
-        });
-    }
-
-    @Override
-    public ICommandContainer[] getCommandContainers() {
-        return containers.getValue();
-    }
-
-    @Override
-    public RunResult getEmptyCommandResult() {
-        return RunResult.inputIllegal;
-    }
-
-    @Override
-    public RunResult getUnknownCommandResult() {
-        return RunResult.callInnerMethodIllegal;
+    
+        @Override
+        public ICommandContainer[] getCommandContainers() {
+            return containers.getValue();
+        }
+    
+        @Override
+        public RunResult getEmptyCommandResult() {
+            return RunResult.inputIllegal;
+        }
+    
+        @Override
+        public RunResult getUnknownCommandResult() {
+            return new RunResult(CALL_INNER_METHOD_ILLEGAL);
+        }
     }
 }

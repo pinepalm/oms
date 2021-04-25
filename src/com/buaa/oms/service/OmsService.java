@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-26 19:31:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-18 15:04:06
+ * @LastEditTime: 2021-04-25 19:23:38
  * @Description: Oms服务
  */
 package com.buaa.oms.service;
@@ -19,11 +19,13 @@ import com.buaa.foundation.Lazy;
 import com.buaa.oms.OmsApp;
 
 /**
- * @description: Oms服务
+ * Oms服务
  */
 public final class OmsService implements ICommandContainer {
     // <editor-fold> 字符串常量
     private static final String GOOD_BYE = "----- Good Bye! -----";
+    private static final String ENTER_SUDO_MODE = "Enter sudo mode";
+    private static final String LOGIN_SUCCESS = "Login success";
     // </editor-fold>
 
     // <editor-fold> 退出QUIT
@@ -36,8 +38,10 @@ public final class OmsService implements ICommandContainer {
     // </editor-fold>
     // <editor-fold> 进入超级用户模式SUDO
     private final Lazy<ExactMatchCommand> sudoCommand = new Lazy<>(() -> new ExactMatchCommand("SUDO", () -> {
-
-        return RunResult.empty;
+        return RunRequestUtil.handleRunRequest(() -> {
+            SuperUserService superUserService = new SuperUserService();
+            superUserService.getBindingView(true).asCurrentView();
+        }, () -> new RunResult(ENTER_SUDO_MODE));
     }));
     // </editor-fold>
     // <editor-fold> 登录login
@@ -50,22 +54,18 @@ public final class OmsService implements ICommandContainer {
             return RunResult.paramsCountIllegal;
         }
 
-        switch (runtimeArgs[1]) {
-            case "-i":
+        return RunRequestUtil.handleRunRequest(() -> {
+            String user = runtimeArgs[2];
+            String password = runtimeArgs[3];
+            LoginMode mode = runtimeArgs[1].equals("-i") ? LoginMode.ID : LoginMode.NAME;
 
-                break;
-            case "-n":
-
-                break;
-            default:
-                break;
-        }
-
-        return RunResult.empty;
+            UserService.login(user, password, mode);
+        }, () -> new RunResult(LOGIN_SUCCESS));
     }));
     // </editor-fold>
     // <editor-fold> 命令枚举
-    private final Lazy<Iterable<ICommand>> commands = new Lazy<>(() -> Arrays.asList(quitCommand.getValue()));
+    private final Lazy<Iterable<ICommand>> commands = new Lazy<>(
+            () -> Arrays.asList(quitCommand.getValue(), sudoCommand.getValue(), loginCommand.getValue()));
     // </editor-fold>
 
     public static final OmsService instance = new OmsService();

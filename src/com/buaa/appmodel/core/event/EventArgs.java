@@ -8,7 +8,7 @@
 package com.buaa.appmodel.core.event;
 
 /**
- * @description: 事件参数类
+ * 事件参数类
  */
 public class EventArgs {
     

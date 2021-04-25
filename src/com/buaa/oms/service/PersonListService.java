@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 11:07:44
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:38:48
+ * @LastEditTime: 2021-04-25 17:37:26
  * @Description: 人员列表服务
  */
 package com.buaa.oms.service;
@@ -18,7 +18,7 @@ import com.buaa.foundation.Lazy;
 import com.buaa.oms.dao.PersonList;
 
 /**
- * @description: 人员列表服务
+ * 人员列表服务
  */
 public final class PersonListService implements ICommandContainer {
     // <editor-fold> 添加人np
@@ -30,7 +30,7 @@ public final class PersonListService implements ICommandContainer {
 
         return RunRequestUtil.handleRunRequest(() -> {
             return PersonList.instance.addPerson(runtimeArgs[1], runtimeArgs[2], runtimeArgs[3]);
-        }, (person) -> new RunResult(person.toString()));
+        }, (person) -> new RunResult(person.toNPString()));
     }));
     // </editor-fold>
     // <editor-fold> 命令枚举

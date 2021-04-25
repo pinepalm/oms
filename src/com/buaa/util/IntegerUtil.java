@@ -8,7 +8,7 @@
 package com.buaa.util;
 
 /**
- * @description: 整型工具类
+ * 整型工具类
  */
 public final class IntegerUtil {
     public static int tryParse(String s, int defaultValue) {

@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:22:43
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 11:27:28
+ * @LastEditTime: 2021-04-24 11:40:04
  * @Description: 菜单类
  */
 package com.buaa.oms.dao;
@@ -18,7 +18,7 @@ import com.buaa.foundation.collections.GroupingBase;
 import com.buaa.oms.model.Dish;
 
 /**
- * @description: 菜单类
+ * 菜单类
  */
 public final class Menu extends GroupingBase<String, Dish> {
     // <editor-fold> 字符串常量
@@ -47,11 +47,6 @@ public final class Menu extends GroupingBase<String, Dish> {
 
     public static final Menu instance = new Menu();
 
-    /**
-     * @description: 默认构造
-     * @param {*}
-     * @return {*}
-     */
     private Menu() {
         Comparator<Dish> dishComparator = (d1, d2) -> d1.getDID().compareTo(d2.getDID());
 
@@ -64,9 +59,11 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 通过编号取出菜品
-     * @param {String} did
-     * @return {*}
+     * 通过编号取出菜品
+     * 
+     * @param did 菜品id
+     * @return 菜品
+     * @throws IllegalArgumentException
      */
     public Dish getDishById(String did) throws IllegalArgumentException {
         if (!Dish.checkDID(did)) {
@@ -77,18 +74,20 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 通过名称取出菜品
-     * @param {String} name
-     * @return {*}
+     * 通过名称取出菜品
+     * 
+     * @param name 名称
+     * @return 菜品
      */
     public Dish getDishByName(String name) {
         return getIndexer(NAME).get(name);
     }
 
     /**
-     * @description: 通过关键词取出菜品集合
-     * @param {String} keyword
-     * @return {*}
+     * 通过关键词取出菜品集合
+     * 
+     * @param keyword 关键词
+     * @return 菜品集合
      */
     public Vector<Dish> getDishByKeyWord(String keyword) {
         Vector<Dish> res = new Vector<>();
@@ -106,12 +105,13 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 添加菜品
-     * @param {String} did
-     * @param {String} name
-     * @param {double} price
-     * @param {int}    total
-     * @return {*}
+     * 添加菜品
+     * 
+     * @param did   菜品id
+     * @param name  名称
+     * @param price 价格
+     * @param total 总量
+     * @throws IllegalArgumentException
      */
     public void addDish(String did, String name, double price, int total) throws IllegalArgumentException {
         Dish dishById = getDishById(did);
@@ -139,10 +139,11 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 修改菜品(名称)
-     * @param {String} did
-     * @param {String} name
-     * @return {*}
+     * 修改菜品(名称)
+     * 
+     * @param did  菜品id
+     * @param name 名称
+     * @throws IllegalArgumentException
      */
     public void updateDish(String did, String name) throws IllegalArgumentException {
         Dish dishById = getDishById(did);
@@ -166,10 +167,11 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 修改菜品(价格)
-     * @param {String} did
-     * @param {double} price
-     * @return {*}
+     * 修改菜品(价格)
+     * 
+     * @param did   菜品id
+     * @param price 价格
+     * @throws IllegalArgumentException
      */
     public void updateDish(String did, double price) throws IllegalArgumentException {
         Dish dishById = getDishById(did);
@@ -185,10 +187,11 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 修改菜品(总量)
-     * @param {String} did
-     * @param {int}    total
-     * @return {*}
+     * 修改菜品(总量)
+     * 
+     * @param did   菜品id
+     * @param total 总量
+     * @throws IllegalArgumentException
      */
     public void updateDish(String did, int total) throws IllegalArgumentException {
         Dish dishById = getDishById(did);
@@ -204,9 +207,9 @@ public final class Menu extends GroupingBase<String, Dish> {
     }
 
     /**
-     * @description: 打印菜单
-     * @param {*}
-     * @return {*}
+     * 打印菜单
+     * 
+     * @throws IllegalStateException
      */
     public void print() throws IllegalStateException {
         if (isEmpty()) {

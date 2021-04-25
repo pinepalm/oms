@@ -8,7 +8,7 @@
 package com.buaa.util;
 
 /**
- * @description: 双精度浮点数工具类
+ * 双精度浮点数工具类
  */
 public final class DoubleUtil {
     public static double tryParse(String s, double defaultValue) {

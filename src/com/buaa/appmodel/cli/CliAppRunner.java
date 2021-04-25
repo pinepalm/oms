@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 10:17:14
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-18 14:55:57
+ * @LastEditTime: 2021-04-24 13:07:51
  * @Description: 命令行应用运行器
  */
 package com.buaa.appmodel.cli;
@@ -16,7 +16,7 @@ import com.buaa.appmodel.core.input.ICommand;
 import com.buaa.appmodel.core.input.ICommandContainer;
 
 /**
- * @description: 命令行应用运行器
+ * 命令行应用运行器
  */
 public final class CliAppRunner {
     private final Map<String, ExactMatchCommand> exactMatchCmds;
@@ -42,17 +42,20 @@ public final class CliAppRunner {
     }
 
     /**
-     * @description: 加载命令容器
-     * @param {ICommandContainer...} containers
-     * @return {*}
+     * 加载命令容器
+     * 
+     * @param containers 命令容器数组
+     * @return 自身
      */
     public CliAppRunner load(ICommandContainer... containers) {
         for (ICommandContainer container : containers) {
-            for (ICommand command : container.getCommands()) {
-                if (command instanceof ExactMatchCommand) {
-                    exactMatchCmds.put(command.getName(), (ExactMatchCommand) command);
-                } else if (command instanceof StandardCommand) {
-                    standardCmds.put(command.getName(), (StandardCommand) command);
+            if (container != null) {
+                for (ICommand command : container.getCommands()) {
+                    if (command instanceof ExactMatchCommand) {
+                        exactMatchCmds.put(command.getName(), (ExactMatchCommand) command);
+                    } else if (command instanceof StandardCommand) {
+                        standardCmds.put(command.getName(), (StandardCommand) command);
+                    }
                 }
             }
         }
@@ -61,17 +64,20 @@ public final class CliAppRunner {
     }
 
     /**
-     * @description: 卸载命令容器
-     * @param {ICommandContainer...} containers
-     * @return {*}
+     * 卸载命令容器
+     * 
+     * @param containers 命令容器数组
+     * @return 自身
      */
     public CliAppRunner unload(ICommandContainer... containers) {
         for (ICommandContainer container : containers) {
-            for (ICommand command : container.getCommands()) {
-                if (command instanceof ExactMatchCommand) {
-                    exactMatchCmds.remove(command.getName());
-                } else if (command instanceof StandardCommand) {
-                    standardCmds.remove(command.getName());
+            if (container != null) {
+                for (ICommand command : container.getCommands()) {
+                    if (command instanceof ExactMatchCommand) {
+                        exactMatchCmds.remove(command.getName());
+                    } else if (command instanceof StandardCommand) {
+                        standardCmds.remove(command.getName());
+                    }
                 }
             }
         }
@@ -80,9 +86,9 @@ public final class CliAppRunner {
     }
 
     /**
-     * @description: 运行命令
-     * @param {String} cmd
-     * @return {*}
+     * 运行命令
+     * 
+     * @param cmd 命令
      */
     public void run(String cmd) {
         ExactMatchCommand exactMatchCmd = exactMatchCmds.get(cmd);

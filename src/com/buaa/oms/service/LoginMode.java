@@ -8,7 +8,7 @@
 package com.buaa.oms.service;
 
 /**
- * @description: 登录模式
+ * 登录模式
  */
 public enum LoginMode {
     ID,

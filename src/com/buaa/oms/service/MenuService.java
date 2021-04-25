@@ -23,7 +23,7 @@ import com.buaa.util.DoubleUtil;
 import com.buaa.util.IntegerUtil;
 
 /**
- * @description: 菜单服务
+ * 菜单服务
  */
 public final class MenuService implements ICommandContainer {
     // <editor-fold> 字符串常量

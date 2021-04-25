@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-24 20:07:27
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 10:47:09
+ * @LastEditTime: 2021-04-24 12:01:51
  * @Description: 菜品类
  */
 package com.buaa.oms.model;
@@ -10,40 +10,44 @@ package com.buaa.oms.model;
 import java.util.regex.Pattern;
 
 /**
- * @description: 菜品类
+ * 菜品类
  */
 public class Dish {
     /**
-     * @description: 检查编号
-     * @param {String} did
-     * @return {*}
+     * 检查编号
+     * 
+     * @param did 菜品id
+     * @return 是否合法
      */
     public static boolean checkDID(String did) {
         return Pattern.matches("^(H|C|O)[0-9]{6}$", did);
     }
 
     /**
-     * @description: 检查名称
-     * @param {String} name
-     * @return {*}
+     * 检查名称
+     * 
+     * @param name 名称
+     * @return 是否合法
      */
     public static boolean checkName(String name) {
         return Pattern.matches("^[0-9a-zA-Z]+$", name);
     }
 
     /**
-     * @description: 检查价格
-     * @param {double} price
-     * @return {*}
+     * 检查价格
+     * 
+     * @param price 价格
+     * @return 是否合法
      */
     public static boolean checkPrice(double price) {
         return price >= 0d;
     }
 
     /**
-     * @description: 检查总量
-     * @param {int} total
-     * @return {*}
+     * 检查总量
+     * 
+     * @param total 总量
+     * @return 是否合法
      */
     public static boolean checkTotal(int total) {
         return total >= 0;
@@ -55,21 +59,19 @@ public class Dish {
     private int total;
 
     /**
-     * @description: 默认构造
-     * @param {*}
-     * @return {*}
+     * 默认构造
      */
     public Dish() {
 
     }
 
     /**
-     * @description: 指定参数构造
-     * @param {String} did
-     * @param {String} name
-     * @param {double} price
-     * @param {int} total
-     * @return {*}
+     * 指定参数构造
+     * 
+     * @param did   菜品id
+     * @param name  名称
+     * @param price 价格
+     * @param total 总量
      */
     public Dish(String did, String name, double price, int total) {
         setDID(did);
@@ -81,6 +83,7 @@ public class Dish {
     public String getDID() {
         return did;
     }
+
     public void setDID(String did) {
         this.did = did;
     }
@@ -88,6 +91,7 @@ public class Dish {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -95,6 +99,7 @@ public class Dish {
     public double getPrice() {
         return price;
     }
+
     public void setPrice(double price) {
         this.price = price;
     }
@@ -102,6 +107,7 @@ public class Dish {
     public int getTotal() {
         return total;
     }
+
     public void setTotal(int total) {
         this.total = total;
     }

@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-15 15:51:25
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 00:51:22
+ * @LastEditTime: 2021-04-24 11:35:03
  * @Description: 组基类
  */
 package com.buaa.foundation.collections;
@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * @description: 组基类
+ * 组基类
  */
 public abstract class GroupingBase<K, V> {
     protected final Map<K, Set<V>> items;

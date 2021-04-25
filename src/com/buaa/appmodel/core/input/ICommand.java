@@ -2,19 +2,19 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-25 18:59:44
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 01:20:30
+ * @LastEditTime: 2021-04-24 11:27:25
  * @Description: 命令接口
  */
 package com.buaa.appmodel.core.input;
 
 /**
- * @description: 命令接口
+ * 命令接口
  */
 public interface ICommand {
     /**
-     * @description: 获取命令名称
-     * @param {*}
-     * @return {*}
+     * 获取命令名称
+     * 
+     * @return 命令名称
      */
     String getName();
 }

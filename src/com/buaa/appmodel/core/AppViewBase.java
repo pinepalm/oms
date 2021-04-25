@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 01:51:26
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 09:50:03
+ * @LastEditTime: 2021-04-24 11:34:53
  * @Description: 应用视图基类
  */
 package com.buaa.appmodel.core;
@@ -12,7 +12,7 @@ import com.buaa.appmodel.core.event.EventArgs;
 import com.buaa.foundation.IClosable;
 
 /**
- * @description: 应用视图基类
+ * 应用视图基类
  */
 @SuppressWarnings("rawtypes")
 public abstract class AppViewBase<L extends AppViewBase, A extends AppBase> implements IClosable {
@@ -23,7 +23,7 @@ public abstract class AppViewBase<L extends AppViewBase, A extends AppBase> impl
     private boolean isCurrent;
     private Object tag;
 
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")
     protected AppViewBase(A bindingApp) {
         this.bindingApp = bindingApp;
         this.bindingApp.views.add(this);
@@ -47,9 +47,9 @@ public abstract class AppViewBase<L extends AppViewBase, A extends AppBase> impl
     }
 
     /**
-     * @description: 作为当前视图
-     * @param {*}
-     * @return {*}
+     * 作为当前视图
+     * 
+     * @return 自身
      */
     @SuppressWarnings("unchecked")
     public L asCurrentView() {

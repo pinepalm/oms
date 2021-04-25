@@ -2,21 +2,24 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-09 20:12:04
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 10:46:49
+ * @LastEditTime: 2021-04-25 17:12:39
  * @Description: 顾客类
  */
 package com.buaa.oms.model;
 
+import com.buaa.oms.service.CustomerService;
+import com.buaa.oms.service.IPersonService;
+
 /**
- * @description: 顾客类
+ * 顾客类
  */
 public class Customer extends Person {
     private boolean isVIP;
     private double balance;
     private boolean isDining;
 
-    public Customer(String name, String sex, String phoneNum) {
-        super(name, sex, phoneNum);
+    public Customer(String name, String sex, String phoneNum, String pid) {
+        super(name, sex, phoneNum, pid);
     }
 
     public boolean getIsVIP() {
@@ -41,5 +44,10 @@ public class Customer extends Person {
 
     public void setIsDining(boolean isDining) {
         this.isDining = isDining;
+    }
+
+    @Override
+    public IPersonService createService() {
+        return new CustomerService(this);
     }
 }

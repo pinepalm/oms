@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-05 23:45:20
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 01:21:29
+ * @LastEditTime: 2021-04-24 11:25:14
  * @Description: 运行器定义
  */
 package com.buaa.appmodel.cli;
@@ -14,23 +14,23 @@ import com.buaa.appmodel.core.input.ICommandContainer;
  */
 public interface IRunnerDefinition {
     /**
-     * @description: 获取命令容器数组
-     * @param {*}
-     * @return {*}
+     * 获取命令容器数组
+     * 
+     * @return 命令容器数组
      */
     ICommandContainer[] getCommandContainers();
 
     /**
-     * @description: 获取空命令结果
-     * @param {*}
-     * @return {*}
+     * 获取空命令结果
+     * 
+     * @return 空命令结果
      */
     RunResult getEmptyCommandResult();
 
     /**
-     * @description: 获取未知命令结果
-     * @param {*}
-     * @return {*}
+     * 获取未知命令结果
+     * 
+     * @return 未知命令结果
      */
     RunResult getUnknownCommandResult();
 }

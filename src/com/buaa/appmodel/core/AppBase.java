@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 01:58:41
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-18 14:24:40
+ * @LastEditTime: 2021-04-24 11:33:04
  * @Description: 应用基类
  */
 package com.buaa.appmodel.core;
@@ -17,7 +17,7 @@ import com.buaa.appmodel.core.event.EventArgs;
 import com.buaa.foundation.IClosable;
 
 /**
- * @description: 应用基类
+ * 应用基类
  */
 @SuppressWarnings("rawtypes")
 public abstract class AppBase<V extends AppViewBase> implements IClosable {
@@ -36,25 +36,26 @@ public abstract class AppBase<V extends AppViewBase> implements IClosable {
     protected abstract V openMainView();
 
     /**
-     * @description: 打开新视图
-     * @param {*}
-     * @return {*}
+     * 打开新视图
+     * 
+     * @return 新视图
      */
     public abstract V openNewView();
 
     /**
-     * @description: 获取当前视图
-     * @param {*}
-     * @return {*}
+     * 获取当前视图
+     * 
+     * @return 当前视图
      */
     public V getCurrentView() {
         return getView((view) -> view.getIsCurrent());
     }
 
     /**
-     * @description: 获取指定视图
-     * @param {Predicate<V>} predicate
-     * @return {*}
+     * 获取指定视图
+     * 
+     * @param predicate 判别器
+     * @return 指定视图
      */
     public V getView(Predicate<V> predicate) {
         if (predicate == null)
@@ -70,9 +71,9 @@ public abstract class AppBase<V extends AppViewBase> implements IClosable {
     }
 
     /**
-     * @description: 获取视图列表的只读映射
-     * @param {*}
-     * @return {*}
+     * 获取视图列表的只读映射
+     * 
+     * @return 视图列表的只读映射
      */
     public List<V> getViews() {
         return readonlyViews;

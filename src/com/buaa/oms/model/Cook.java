@@ -8,10 +8,10 @@
 package com.buaa.oms.model;
 
 /**
- * @description: 厨师类
+ * 厨师类
  */
 public class Cook extends Person {
-    public Cook(String name, String sex, String phoneNum) {
-        super(name, sex, phoneNum);
+    public Cook(String name, String sex, String phoneNum, String pid) {
+        super(name, sex, phoneNum, pid);
     }
 }
