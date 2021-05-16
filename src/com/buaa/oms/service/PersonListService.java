@@ -22,7 +22,7 @@ import com.buaa.oms.dao.PersonList;
  */
 public final class PersonListService implements ICommandContainer {
     // <editor-fold> 添加人np
-    private final Lazy<StandardCommand> newPersonCommand = new Lazy<>(() -> new StandardCommand("np", (runtimeArgs) -> {
+    private final Lazy<ICommand> newPersonCommand = new Lazy<>(() -> new StandardCommand("np", (runtimeArgs) -> {
         if (runtimeArgs.length != 4) {
             // return new RunResult(ARGUMENTS_ILLEGAL);
             return RunResult.paramsCountIllegal;

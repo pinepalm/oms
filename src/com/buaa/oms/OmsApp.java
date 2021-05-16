@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 10:38:42
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-24 12:18:19
+ * @LastEditTime: 2021-05-16 14:35:17
  * @Description: Oms应用
  */
 package com.buaa.oms;
@@ -15,9 +15,7 @@ import com.buaa.appmodel.core.event.EventArgs;
 import com.buaa.appmodel.core.event.EventHandler;
 import com.buaa.appmodel.core.input.ICommandContainer;
 import com.buaa.foundation.Lazy;
-import com.buaa.oms.service.MenuService;
 import com.buaa.oms.service.OmsService;
-import com.buaa.oms.service.PersonListService;
 
 /**
  * Oms应用
@@ -62,7 +60,7 @@ public final class OmsApp extends CliApp {
     
         public MainRunnerDefinition() {
             containers = new Lazy<>(() -> {
-                ICommandContainer[] containers = { OmsService.instance, PersonListService.instance, MenuService.instance };
+                ICommandContainer[] containers = { OmsService.instance };
                 return containers;
             });
         }

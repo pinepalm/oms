@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-15 00:58:25
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-25 19:46:41
+ * @LastEditTime: 2021-05-16 14:35:36
  * @Description: 超级用户服务
  */
 package com.buaa.oms.service;
@@ -39,7 +39,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     // </editor-fold>
 
     // <editor-fold> 新增顾客sncu
-    private final Lazy<StandardCommand> sncuCommand = new Lazy<>(() -> new StandardCommand("sncu", (runtimeArgs) -> {
+    private final Lazy<ICommand> sncuCommand = new Lazy<>(() -> new StandardCommand("sncu", (runtimeArgs) -> {
         if (runtimeArgs.length != 5) {
             return RunResult.paramsCountIllegal;
         }
@@ -50,7 +50,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 新增服务员snwa
-    private final Lazy<StandardCommand> snwaCommand = new Lazy<>(() -> new StandardCommand("snwa", (runtimeArgs) -> {
+    private final Lazy<ICommand> snwaCommand = new Lazy<>(() -> new StandardCommand("snwa", (runtimeArgs) -> {
         if (runtimeArgs.length != 5) {
             return RunResult.paramsCountIllegal;
         }
@@ -61,7 +61,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 新增厨师snco
-    private final Lazy<StandardCommand> sncoCommand = new Lazy<>(() -> new StandardCommand("snco", (runtimeArgs) -> {
+    private final Lazy<ICommand> sncoCommand = new Lazy<>(() -> new StandardCommand("snco", (runtimeArgs) -> {
         if (runtimeArgs.length != 5) {
             return RunResult.paramsCountIllegal;
         }
@@ -72,7 +72,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 删除顾客dcu
-    private final Lazy<StandardCommand> dcuCommand = new Lazy<>(() -> new StandardCommand("dcu", (runtimeArgs) -> {
+    private final Lazy<ICommand> dcuCommand = new Lazy<>(() -> new StandardCommand("dcu", (runtimeArgs) -> {
         if (runtimeArgs.length != 2) {
             return RunResult.paramsCountIllegal;
         }
@@ -83,7 +83,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 删除服务员dwa
-    private final Lazy<StandardCommand> dwaCommand = new Lazy<>(() -> new StandardCommand("dwa", (runtimeArgs) -> {
+    private final Lazy<ICommand> dwaCommand = new Lazy<>(() -> new StandardCommand("dwa", (runtimeArgs) -> {
         if (runtimeArgs.length != 2) {
             return RunResult.paramsCountIllegal;
         }
@@ -94,7 +94,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 删除厨师dco
-    private final Lazy<StandardCommand> dcoCommand = new Lazy<>(() -> new StandardCommand("dco", (runtimeArgs) -> {
+    private final Lazy<ICommand> dcoCommand = new Lazy<>(() -> new StandardCommand("dco", (runtimeArgs) -> {
         if (runtimeArgs.length != 2) {
             return RunResult.paramsCountIllegal;
         }
@@ -105,7 +105,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 打印人员列表pp
-    private final Lazy<StandardCommand> ppCommand = new Lazy<>(() -> new StandardCommand("pp", (runtimeArgs) -> {
+    private final Lazy<ICommand> ppCommand = new Lazy<>(() -> new StandardCommand("pp", (runtimeArgs) -> {
         if (runtimeArgs.length != 1) {
             return RunResult.paramsCountIllegal;
         }
@@ -116,7 +116,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
     }));
     // </editor-fold>
     // <editor-fold> 退出超级用户状态SQ
-    private final Lazy<ExactMatchCommand> sqCommand = new Lazy<>(() -> new ExactMatchCommand("SQ", () -> {
+    private final Lazy<ICommand> sqCommand = new Lazy<>(() -> new ExactMatchCommand("SQ", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             close();
         }, () -> new RunResult(QUIT_SUDO_MODE));
@@ -147,7 +147,7 @@ public final class SuperUserService extends OmsEmbeddedEnvService {
 
         public SuperUserRunnerDefinition() {
             containers = new Lazy<>(() -> {
-                ICommandContainer[] containers = { SuperUserService.this };
+                ICommandContainer[] containers = { SuperUserService.this, PersonListService.instance, MenuService.instance };
                 return containers;
             });
         }

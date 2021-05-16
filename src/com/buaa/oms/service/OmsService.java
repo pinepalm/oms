@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-26 19:31:06
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-25 19:23:38
+ * @LastEditTime: 2021-05-16 14:29:02
  * @Description: Oms服务
  */
 package com.buaa.oms.service;
@@ -29,7 +29,7 @@ public final class OmsService implements ICommandContainer {
     // </editor-fold>
 
     // <editor-fold> 退出QUIT
-    private final Lazy<ExactMatchCommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("QUIT", () -> {
+    private final Lazy<ICommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("QUIT", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             System.out.println(GOOD_BYE);
             OmsApp.getInstance().close();
@@ -37,15 +37,15 @@ public final class OmsService implements ICommandContainer {
     }));
     // </editor-fold>
     // <editor-fold> 进入超级用户模式SUDO
-    private final Lazy<ExactMatchCommand> sudoCommand = new Lazy<>(() -> new ExactMatchCommand("SUDO", () -> {
+    private final Lazy<ICommand> sudoCommand = new Lazy<>(() -> new ExactMatchCommand("SUDO", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             SuperUserService superUserService = new SuperUserService();
-            superUserService.getBindingView(true).asCurrentView();
+            superUserService.open();
         }, () -> new RunResult(ENTER_SUDO_MODE));
     }));
     // </editor-fold>
     // <editor-fold> 登录login
-    private final Lazy<StandardCommand> loginCommand = new Lazy<>(() -> new StandardCommand("login", (runtimeArgs) -> {
+    private final Lazy<ICommand> loginCommand = new Lazy<>(() -> new StandardCommand("login", (runtimeArgs) -> {
         if (runtimeArgs.length < 2 || !Arrays.asList("-i", "-n").contains(runtimeArgs[1])) {
             return RunResult.commandNotExist;
         }

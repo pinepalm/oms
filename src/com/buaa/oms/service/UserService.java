@@ -2,15 +2,15 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-14 23:38:55
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-25 19:47:12
+ * @LastEditTime: 2021-05-16 14:33:58
  * @Description: 用户服务
  */
 package com.buaa.oms.service;
 
 import java.util.Arrays;
 
-import com.buaa.appmodel.cli.CliAppRunner;
 import com.buaa.appmodel.cli.ExactMatchCommand;
+import com.buaa.appmodel.cli.IRunnerDefinition;
 import com.buaa.appmodel.cli.RunResult;
 import com.buaa.appmodel.cli.StandardCommand;
 import com.buaa.appmodel.cli.util.RunRequestUtil;
@@ -24,7 +24,7 @@ import com.buaa.oms.model.Person;
 /**
  * 用户服务
  */
-public final class UserService implements ICommandContainer {
+public final class UserService extends OmsEmbeddedEnvService {
     // <editor-fold> 字符串常量
     private static final String SUCCESS = "%s success";
     private static final String LOGOUT_SUCCESS = String.format(SUCCESS, "Logout");
@@ -39,6 +39,7 @@ public final class UserService implements ICommandContainer {
 
     private static final String NOT_MATCH = "Not match";
     private static final String PASSWORD_NOT_MATCH = "Password not match";
+    private static final String GOOD_BYE = "----- Good Bye! -----";
     // </editor-fold>
 
     /**
@@ -47,10 +48,9 @@ public final class UserService implements ICommandContainer {
      * @param user     用户
      * @param password 密码
      * @param mode     模式
-     * @return 用户服务
      * @throws IllegalArgumentException
      */
-    public static UserService login(String user, String password, LoginMode mode) throws IllegalArgumentException {
+    public static void login(String user, String password, LoginMode mode) throws IllegalArgumentException {
         Person person = null;
 
         switch (mode) {
@@ -75,11 +75,12 @@ public final class UserService implements ICommandContainer {
             throw new IllegalArgumentException(PASSWORD_NOT_MATCH);
         }
 
-        return new UserService(person).activate();
+        UserService service = new UserService(person);
+        service.open();
     }
 
     // <editor-fold> 修改密码chgpw
-    private final Lazy<StandardCommand> chgpwCommand = new Lazy<>(() -> new StandardCommand("chgpw", (runtimeArgs) -> {
+    private final Lazy<ICommand> chgpwCommand = new Lazy<>(() -> new StandardCommand("chgpw", (runtimeArgs) -> {
         if (runtimeArgs.length != 3) {
             return RunResult.paramsCountIllegal;
         }
@@ -90,46 +91,48 @@ public final class UserService implements ICommandContainer {
     }));
     // </editor-fold>
     // <editor-fold> 我的信息myinfo
-    private final Lazy<ExactMatchCommand> myinfoCommand = new Lazy<>(() -> new ExactMatchCommand("myinfo", () -> {
+    private final Lazy<ICommand> myinfoCommand = new Lazy<>(() -> new ExactMatchCommand("myinfo", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             printInfo();
         }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 退出登录back
-    private final Lazy<ExactMatchCommand> backCommand = new Lazy<>(() -> new ExactMatchCommand("back", () -> {
+    private final Lazy<ICommand> backCommand = new Lazy<>(() -> new ExactMatchCommand("back", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
-            logout();
+            close();
         }, () -> new RunResult(LOGOUT_SUCCESS));
     }));
     // </editor-fold>
+    // <editor-fold> 退出QUIT
+    private final Lazy<ICommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("QUIT", () -> {
+        return RunRequestUtil.handleRunRequest(() -> {
+            System.out.println(GOOD_BYE);
+            OmsApp.getInstance().close();
+        }, () -> RunResult.empty);
+    }));
+    // </editor-fold>
     // <editor-fold> 命令枚举
-    private final Lazy<Iterable<ICommand>> commands = new Lazy<>(
-            () -> Arrays.asList(chgpwCommand.getValue(), myinfoCommand.getValue(), backCommand.getValue()));
+    private final Lazy<Iterable<ICommand>> commands = new Lazy<>(() -> Arrays.asList(chgpwCommand.getValue(),
+            myinfoCommand.getValue(), backCommand.getValue(), quitCommand.getValue()));
     // </editor-fold>
 
     private final Person person;
     private final IPersonService personService;
-
-    private CliAppRunner runner;
 
     private UserService(Person person) {
         this.person = person;
         this.personService = person.createService();
     }
 
-    private UserService activate() {
-        runner = OmsApp.getInstance().runnerHost.getRunnerForCurrentView();
-        if (runner != null) {
-            runner.load(this, personService);
-        }
-
-        return this;
-    }
-
     @Override
     public Iterable<ICommand> getCommands() {
         return commands.getValue();
+    }
+
+    @Override
+    protected IRunnerDefinition createRunnerDefinitionInternal() {
+        return new UserRunnerDefinition();
     }
 
     /**
@@ -160,12 +163,29 @@ public final class UserService implements ICommandContainer {
                 + person.getPwd() + "\n" + "| Type:\t" + person.getClass().getSimpleName());
     }
 
-    /**
-     * 退出登录
-     */
-    public void logout() {
-        if (runner != null) {
-            runner.unload(this, personService);
+    private final class UserRunnerDefinition implements IRunnerDefinition {
+        private final Lazy<ICommandContainer[]> containers;
+
+        public UserRunnerDefinition() {
+            containers = new Lazy<>(() -> {
+                ICommandContainer[] containers = { UserService.this, UserService.this.personService };
+                return containers;
+            });
+        }
+
+        @Override
+        public ICommandContainer[] getCommandContainers() {
+            return containers.getValue();
+        }
+
+        @Override
+        public RunResult getEmptyCommandResult() {
+            return RunResult.inputIllegal;
+        }
+
+        @Override
+        public RunResult getUnknownCommandResult() {
+            return RunResult.commandNotExist;
         }
     }
 }

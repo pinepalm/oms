@@ -30,28 +30,28 @@ public final class MenuViewerService extends OmsEmbeddedEnvService {
     private MenuViewer viewer;
 
     // <editor-fold> 下一页n
-    private final Lazy<ExactMatchCommand> nextCommand = new Lazy<>(() -> new ExactMatchCommand("n", () -> {
+    private final Lazy<ICommand> nextCommand = new Lazy<>(() -> new ExactMatchCommand("n", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             viewer.next();
         }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 上一页l
-    private final Lazy<ExactMatchCommand> lastCommand = new Lazy<>(() -> new ExactMatchCommand("l", () -> {
+    private final Lazy<ICommand> lastCommand = new Lazy<>(() -> new ExactMatchCommand("l", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             viewer.last();
         }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 第一页f
-    private final Lazy<ExactMatchCommand> firstCommand = new Lazy<>(() -> new ExactMatchCommand("f", () -> {
+    private final Lazy<ICommand> firstCommand = new Lazy<>(() -> new ExactMatchCommand("f", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             viewer.first();
         }, () -> RunResult.empty);
     }));
     // </editor-fold>
     // <editor-fold> 退出q
-    private final Lazy<ExactMatchCommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("q", () -> {
+    private final Lazy<ICommand> quitCommand = new Lazy<>(() -> new ExactMatchCommand("q", () -> {
         return RunRequestUtil.handleRunRequest(() -> {
             close();
         }, () -> new RunResult(EXIT_PAGE_CHECK_MODE));

@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-25 16:04:21
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-25 16:26:55
+ * @LastEditTime: 2021-05-16 14:28:06
  * @Description: Oms内嵌环境服务
  */
 package com.buaa.oms.service;
@@ -17,6 +17,7 @@ import com.buaa.oms.OmsApp;
  * Oms内嵌环境服务
  */
 public abstract class OmsEmbeddedEnvService implements ICommandContainer, IClosable {
+    private CliAppView parentView;
     private CliAppView bindingView;
 
     protected abstract IRunnerDefinition createRunnerDefinitionInternal();
@@ -27,15 +28,24 @@ public abstract class OmsEmbeddedEnvService implements ICommandContainer, IClosa
      * @param createIfNotExist 当视图不存在时是否创建
      * @return 绑定的视图
      */
-    public CliAppView getBindingView(boolean createIfNotExist) {
+    private CliAppView getBindingView(boolean createIfNotExist) {
         if (bindingView != null)
             return bindingView;
 
         if (createIfNotExist) {
-            bindingView = OmsApp.getInstance().openNewView(createRunnerDefinitionInternal());
+            OmsApp app = OmsApp.getInstance();
+            parentView = app.getCurrentView();
+            bindingView = app.openNewView(createRunnerDefinitionInternal());
         }
 
         return bindingView;
+    }
+
+    /**
+     * 打开
+     */
+    public void open() {
+        getBindingView(true).asCurrentView();
     }
 
     @Override
@@ -43,7 +53,7 @@ public abstract class OmsEmbeddedEnvService implements ICommandContainer, IClosa
         CliAppView bindingView = getBindingView(false);
         if (bindingView != null) {
             bindingView.close();
-            OmsApp.getInstance().mainView.asCurrentView();
+            parentView.asCurrentView();
         }
     }
 }

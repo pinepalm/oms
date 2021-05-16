@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-25 19:32:12
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-25 19:38:50
+ * @LastEditTime: 2021-05-16 20:01:13
  * @Description: 人员列表类
  */
 package com.buaa.oms.dao;
@@ -10,6 +10,7 @@ package com.buaa.oms.dao;
 import java.lang.reflect.Constructor;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -221,6 +222,23 @@ public final class PersonList extends GroupingBase<String, Person> {
         getIndexer(PID).remove(personById.getPID());
         getIndexer(NAME).remove(personById.getName());
         getIndexer(PHONE_NUM).remove(personById.getPhoneNum());
+    }
+
+    public Waiter getFirstServableWaiter() {
+        Set<Person> waiters = items.get(WAITER);
+        PriorityQueue<Waiter> waitersQueue = new PriorityQueue<>((w1, w2) -> {
+            int countRes = Integer.compare(w1.getOrders().size(), w2.getOrders().size());
+            if (countRes != 0) {
+                return countRes;
+            }
+
+            return w1.getPID().compareTo(w2.getPID());
+        });
+        for (Person waiter : waiters) {
+            waitersQueue.add((Waiter) waiter);
+        }
+
+        return waitersQueue.peek();
     }
 
     /**

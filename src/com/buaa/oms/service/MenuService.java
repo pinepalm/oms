@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-16 11:19:01
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-16 14:58:07
+ * @LastEditTime: 2021-05-16 14:28:43
  * @Description: 菜单服务
  */
 package com.buaa.oms.service;
@@ -37,7 +37,7 @@ public final class MenuService implements ICommandContainer {
     // </editor-fold>
 
     // <editor-fold> 打印菜单pm
-    private final Lazy<StandardCommand> printMenuCommand = new Lazy<>(() -> new StandardCommand("pm", (runtimeArgs) -> {
+    private final Lazy<ICommand> printMenuCommand = new Lazy<>(() -> new StandardCommand("pm", (runtimeArgs) -> {
         switch (runtimeArgs.length) {
             case 1:
                 return RunRequestUtil.handleRunRequest(() -> {
@@ -52,7 +52,7 @@ public final class MenuService implements ICommandContainer {
                     viewer.build().printCurrent();
 
                     MenuViewerService viewerService = new MenuViewerService(viewer);
-                    viewerService.getBindingView(true).asCurrentView();
+                    viewerService.open();
                 }, () -> RunResult.empty);
             default:
                 return RunResult.paramsCountIllegal;
@@ -60,7 +60,7 @@ public final class MenuService implements ICommandContainer {
     }));
     // </editor-fold>
     // <editor-fold> 添加菜品nd
-    private final Lazy<StandardCommand> newDishCommand = new Lazy<>(() -> new StandardCommand("nd", (runtimeArgs) -> {
+    private final Lazy<ICommand> newDishCommand = new Lazy<>(() -> new StandardCommand("nd", (runtimeArgs) -> {
         if (runtimeArgs.length != 5) {
             return RunResult.paramsCountIllegal;
         }
@@ -76,7 +76,7 @@ public final class MenuService implements ICommandContainer {
     }));
     // </editor-fold>
     // <editor-fold> 获取菜品gd
-    private final Lazy<StandardCommand> getDishCommand = new Lazy<>(() -> new StandardCommand("gd", (runtimeArgs) -> {
+    private final Lazy<ICommand> getDishCommand = new Lazy<>(() -> new StandardCommand("gd", (runtimeArgs) -> {
         if (runtimeArgs.length < 2 || !Arrays.asList("-id", "-key").contains(runtimeArgs[1])) {
             return RunResult.commandNotExist;
         }
@@ -118,7 +118,7 @@ public final class MenuService implements ICommandContainer {
                             viewer.build().printCurrent();
 
                             MenuViewerService viewerService = new MenuViewerService(viewer);
-                            viewerService.getBindingView(true).asCurrentView();
+                            viewerService.open();
                         }, () -> RunResult.empty);
                     default:
                         break;
@@ -133,7 +133,7 @@ public final class MenuService implements ICommandContainer {
     }));
     // </editor-fold>
     // <editor-fold> 修改菜品udd
-    private final Lazy<StandardCommand> updateDishCommand = new Lazy<>(
+    private final Lazy<ICommand> updateDishCommand = new Lazy<>(
             () -> new StandardCommand("udd", (runtimeArgs) -> {
                 if (runtimeArgs.length < 2 || !Arrays.asList("-n", "-t", "-p").contains(runtimeArgs[1])) {
                     return RunResult.commandNotExist;
