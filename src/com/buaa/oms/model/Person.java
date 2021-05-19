@@ -2,14 +2,14 @@
  * @Author: Zhe Chen
  * @Date: 2021-03-21 00:19:12
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-04-25 20:17:03
+ * @LastEditTime: 2021-05-16 22:39:42
  * @Description: 人类
  */
 package com.buaa.oms.model;
 
 import java.util.regex.Pattern;
 
-import com.buaa.oms.service.IPersonService;
+import com.buaa.oms.service.PersonService;
 
 /**
  * 人类
@@ -124,7 +124,7 @@ public class Person {
         this.pwd = pwd;
     }
 
-    public IPersonService createService() {
+    public PersonService<?> createService() {
         return null;
     }
 

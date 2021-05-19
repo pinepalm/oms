@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-14 23:38:55
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-05-16 14:33:58
+ * @LastEditTime: 2021-05-16 22:41:32
  * @Description: 用户服务
  */
 package com.buaa.oms.service;
@@ -118,7 +118,7 @@ public final class UserService extends OmsEmbeddedEnvService {
     // </editor-fold>
 
     private final Person person;
-    private final IPersonService personService;
+    private final PersonService<?> personService;
 
     private UserService(Person person) {
         this.person = person;

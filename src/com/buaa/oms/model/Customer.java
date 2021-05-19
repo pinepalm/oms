@@ -2,14 +2,14 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-09 20:12:04
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-05-16 19:30:05
+ * @LastEditTime: 2021-05-16 22:40:13
  * @Description: 顾客类
  */
 package com.buaa.oms.model;
 
 import com.buaa.oms.dao.OrderList;
 import com.buaa.oms.service.CustomerService;
-import com.buaa.oms.service.IPersonService;
+import com.buaa.oms.service.PersonService;
 
 /**
  * 顾客类
@@ -55,7 +55,7 @@ public class Customer extends Person {
     }
 
     @Override
-    public IPersonService createService() {
+    public PersonService<?> createService() {
         return new CustomerService(this);
     }
 }

@@ -2,7 +2,7 @@
  * @Author: Zhe Chen
  * @Date: 2021-04-09 20:16:40
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-05-16 21:39:26
+ * @LastEditTime: 2021-05-16 22:40:00
  * @Description: 服务员类
  */
 package com.buaa.oms.model;
@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.buaa.oms.dao.Order;
-import com.buaa.oms.service.IPersonService;
+import com.buaa.oms.service.PersonService;
 import com.buaa.oms.service.WaiterService;
 
 /**
@@ -31,7 +31,7 @@ public class Waiter extends Person {
     }
 
     @Override
-    public IPersonService createService() {
+    public PersonService<?> createService() {
         return new WaiterService(this);
     }
 }

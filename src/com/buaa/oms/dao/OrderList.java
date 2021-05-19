@@ -2,8 +2,8 @@
  * @Author: Zhe Chen
  * @Date: 2021-05-16 19:01:15
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-05-16 20:15:12
- * @Description: file content
+ * @LastEditTime: 2021-05-17 00:01:08
+ * @Description: 点菜列表
  */
 package com.buaa.oms.dao;
 
@@ -14,6 +14,9 @@ import com.buaa.oms.model.Customer;
 import com.buaa.oms.model.Dish;
 import com.buaa.util.ListUtil;
 
+/**
+ * 点菜列表
+ */
 public class OrderList {
     // <editor-fold> 字符串常量
     private static final String NO_ORDER = "No order";

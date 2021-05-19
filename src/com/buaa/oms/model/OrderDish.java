@@ -2,11 +2,14 @@
  * @Author: Zhe Chen
  * @Date: 2021-05-16 15:59:51
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-05-16 18:37:54
- * @Description: file content
+ * @LastEditTime: 2021-05-17 00:01:44
+ * @Description: 点菜菜品
  */
 package com.buaa.oms.model;
 
+/**
+ * 点菜菜品
+ */
 public class OrderDish {
     private Dish dish;
     private int count;

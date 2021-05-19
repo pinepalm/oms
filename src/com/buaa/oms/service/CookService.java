@@ -2,8 +2,8 @@
  * @Author: Zhe Chen
  * @Date: 2021-05-16 16:24:42
  * @LastEditors: Zhe Chen
- * @LastEditTime: 2021-05-16 20:45:49
- * @Description: file content
+ * @LastEditTime: 2021-05-17 00:02:14
+ * @Description: 厨师服务
  */
 package com.buaa.oms.service;
 
@@ -18,6 +18,9 @@ import com.buaa.oms.dao.Order;
 import com.buaa.oms.dao.OrderCookList;
 import com.buaa.oms.model.Cook;
 
+/**
+ * 厨师服务
+ */
 public final class CookService extends PersonService<Cook> {
     // <editor-fold> 做菜cook
     private final Lazy<ICommand> cookCommand = new Lazy<>(() -> new StandardCommand("cook", (runtimeArgs) -> {
